@@ -5,6 +5,7 @@ module Text.XML.Nephele where
 
 import Text.Parser.Char
 import Data.Text(Text)
+import Data.Functor.Product
 
 -- $setup
 -- >>> import Text.Parsec
@@ -39,3 +40,9 @@ commentEnd ::
   m Text
 commentEnd =
   text "-->"
+
+comment ::
+  (CharParsing f, CharParsing g) =>
+  Product f g Text
+comment =
+  Pair commentBegin commentEnd
