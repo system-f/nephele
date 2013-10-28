@@ -4,9 +4,10 @@
 module Text.XML.Nephele where
 
 import Text.Parser.Char
-import Data.Text(Text)
+import Data.Text(Text, pack)
 import Data.Functor.Product
-import Prelude(Char)
+import Prelude(Char, Ord(..), (&&), String)
+import Control.Applicative
 
 -- $setup
 -- >>> import Text.Parsec
@@ -48,11 +49,79 @@ comment ::
 comment =
   Pair commentBegin commentEnd
 
--- Char ::=	#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF] 	/* 	any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
 character ::
   CharParsing m =>
   m Char
 character =
-  oneOf ['\x0009', '\x000A', '\x000D']
+  oneOf ['\x9', '\xA', '\xD']
+  <|> satisfyRange '\x20' '\xD7FF'
+  <|> satisfyRange '\xE000' '\xFFFD'
+  <|> satisfyRange '\x10000' '\x10FFFF'
 
--- S ::= (#x20 | #x9 | #xD | #xA)+
+-- | Parse a white space character.
+--
+-- >>> parse whitespace "test" " "
+-- Right ' '
+--
+-- >>> parse whitespace "test" "\t "
+-- Right '\t'
+--
+-- >>> parse whitespace "test" "\n\t "
+-- Right '\n'
+--
+-- >>> parse whitespace "test" "\r\n\t "
+-- Right '\r'
+whitespace ::
+  CharParsing m =>
+  m Char
+whitespace =
+  oneOf ['\x0020', '\x9', '\xD', '\xA']
+
+-- | Parse zero or many white space characters.
+--
+-- >>> parse whitespace0 "test" ""
+-- Right ""
+--
+-- >>> parse whitespace0 "test" " "
+-- Right " "
+--
+-- >>> parse whitespace0 "test" "    "
+-- Right "    "
+--
+-- >>> parse whitespace0 "test" "    abc"
+-- Right "    "
+--
+-- >>> parse whitespace0 "test" "  \t  \n "
+-- Right "  \t  \n "
+whitespace0 ::
+  CharParsing m =>
+  m Text
+whitespace0 =
+  pack <$> many whitespace
+
+-- | Parse one or many white space characters.
+--
+-- >>> isn't _Right (parse whitespace1 "test" "")
+-- True
+--
+-- >>> parse whitespace1 "test" " "
+-- Right " "
+--
+-- >>> parse whitespace1 "test" "    "
+-- Right "    "
+--
+-- >>> parse whitespace1 "test" "    abc"
+-- Right "    "
+--
+-- >>> parse whitespace1 "test" "  \t  \n "
+-- Right "  \t  \n "
+whitespace1 ::
+  CharParsing m =>
+  m Text
+whitespace1 =
+  pack <$> some whitespace
+
+-- todo update to latest parsers (>0.10) with this function
+-- https://github.com/ekmett/parsers/pull/23
+satisfyRange :: CharParsing m => Char -> Char -> m Char
+satisfyRange a z = satisfy (\c -> c >= a && c <= z)
