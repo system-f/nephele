@@ -6,6 +6,7 @@ module Text.XML.Nephele where
 import Text.Parser.Char
 import Data.Text(Text)
 import Data.Functor.Product
+import Prelude(Char)
 
 -- $setup
 -- >>> import Text.Parsec
@@ -46,3 +47,12 @@ comment ::
   Product f g Text
 comment =
   Pair commentBegin commentEnd
+
+-- Char ::=	#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF] 	/* 	any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
+character ::
+  CharParsing m =>
+  m Char
+character =
+  oneOf ['\x0009', '\x000A', '\x000D']
+
+-- S ::= (#x20 | #x9 | #xD | #xA)+
