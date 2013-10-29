@@ -8,7 +8,7 @@ import Text.Parser.Combinators(try, between, sepBy)
 import Data.Text(Text, pack, cons, concat)
 import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
 import Data.Foldable(asum)
-import Data.List.NonEmpty(NonEmpty(..))
+import Data.List.NonEmpty(NonEmpty(..), toList)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), String, error)
 
 -- $setup
@@ -718,12 +718,11 @@ extender =
 satisfyRange :: CharParsing m => Char -> Char -> m Char
 satisfyRange a z = satisfy (\c -> c >= a && c <= z)
 
--- unsafe
 some1 ::
   Alternative f =>
   f a
   -> f (NonEmpty a)
 some1 x =
-  let unsafe (h:t) = h :| t
-      unsafe [] = error "Expected non-empty list from Alternative#some"
-  in unsafe <$> some x
+  let m = toList <$> s <|> pure []
+      s = (:|) <$> x <*> m
+  in s
