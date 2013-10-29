@@ -174,6 +174,13 @@ whitespaces1 ::
 whitespaces1 =
   pack <$> some whitespace
 
+-- | Parse a letter @BaseChar |  Ideographic@.
+letter ::
+  CharParsing m =>
+  m Char
+letter =
+  basecharacter <|> ideographic
+
 -- | Parse a base character.
 basecharacter ::
   CharParsing m =>
