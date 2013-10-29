@@ -79,46 +79,46 @@ whitespace =
 
 -- | Parse zero or many white space characters.
 --
--- >>> parse whitespace0 "test" ""
+-- >>> parse whitespaces "test" ""
 -- Right ""
 --
--- >>> parse whitespace0 "test" " "
+-- >>> parse whitespaces "test" " "
 -- Right " "
 --
--- >>> parse whitespace0 "test" "    "
+-- >>> parse whitespaces "test" "    "
 -- Right "    "
 --
--- >>> parse whitespace0 "test" "    abc"
+-- >>> parse whitespaces "test" "    abc"
 -- Right "    "
 --
--- >>> parse whitespace0 "test" "  \t  \n "
+-- >>> parse whitespaces "test" "  \t  \n "
 -- Right "  \t  \n "
-whitespace0 ::
+whitespaces ::
   CharParsing m =>
   m Text
-whitespace0 =
+whitespaces =
   pack <$> many whitespace
 
 -- | Parse one or many white space characters.
 --
--- >>> isn't _Right (parse whitespace1 "test" "")
+-- >>> isn't _Right (parse whitespaces1 "test" "")
 -- True
 --
--- >>> parse whitespace1 "test" " "
+-- >>> parse whitespaces1 "test" " "
 -- Right " "
 --
--- >>> parse whitespace1 "test" "    "
+-- >>> parse whitespaces1 "test" "    "
 -- Right "    "
 --
--- >>> parse whitespace1 "test" "    abc"
+-- >>> parse whitespaces1 "test" "    abc"
 -- Right "    "
 --
--- >>> parse whitespace1 "test" "  \t  \n "
+-- >>> parse whitespaces1 "test" "  \t  \n "
 -- Right "  \t  \n "
-whitespace1 ::
+whitespaces1 ::
   CharParsing m =>
   m Text
-whitespace1 =
+whitespaces1 =
   pack <$> some whitespace
 
 -- todo update to latest parsers (>0.10) with this function
