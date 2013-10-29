@@ -4,9 +4,10 @@
 module Text.XML.Nephele where
 
 import Text.Parser.Char
-import Data.Text(Text, pack)
-import Data.Functor.Product
-import Prelude(Char, Ord(..), (&&), String)
+import Text.Parser.Combinators
+import qualified Text.Parser.Char as C
+import Data.Text(Text, pack, concat)
+import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), String)
 import Control.Applicative
 
 -- $setup
@@ -43,12 +44,50 @@ commentEnd ::
 commentEnd =
   text "-->"
 
-comment ::
-  (CharParsing f, CharParsing g) =>
-  Product f g Text
-comment =
-  Pair commentBegin commentEnd
+newtype Comment =
+  Comment Text
+  deriving (Eq, Show)
 
+-- | The parser for a comment.
+--
+-- >>> parse comment "test" "<!---->"
+-- Right (Comment "")
+--
+-- >>> parse comment "test" "<!-- abc -->"
+-- Right (Comment " abc ")
+--
+-- >>> parse comment "test" "<!-- a-bc -->"
+-- Right (Comment " a-bc ")
+--
+-- >>> parse comment "test" "<!-- a-b-c -->"
+-- Right (Comment " a-b-c ")
+--
+-- >>> parse comment "test" "<!-- a-bb-cc -->"
+-- Right (Comment " a-bb-cc ")
+--
+-- >>> parse comment "test" "<!-- abc- -->"
+-- Right (Comment " abc- ")
+comment ::
+  CharParsing m =>
+  m Comment
+comment =
+  -- character without '-'
+  let nominus = oneOf ['\x9', '\xA', '\xD']
+           <|> satisfyRange '\x20' '\x2C'
+           <|> satisfyRange '\x2E' '\xD7FF'
+           <|> satisfyRange '\xE000' '\xFFFD'
+           <|> satisfyRange '\x10000' '\x10FFFF'
+      s = (\m c -> [m, c]) <$> C.char '-' <*> nominus
+      t = (:[]) <$> nominus
+      ch = concat <$> many (pack <$> (try s <|> t))
+  in Comment <$> between commentBegin commentEnd ch
+
+-- | Parse a character.
+--
+-- @#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]@.
+--
+-- >>> parse character "test" "abc"
+-- Right 'a'
 character ::
   CharParsing m =>
   m Char
@@ -58,10 +97,23 @@ character =
   <|> satisfyRange '\xE000' '\xFFFD'
   <|> satisfyRange '\x10000' '\x10FFFF'
 
--- | Parse a white space character.
+-- | Parse zero or many characters.
+characters ::
+  CharParsing m =>
+  m Text
+characters =
+  pack <$> many character
+
+-- | Parse one or many characters.
+characters1 ::
+  CharParsing m =>
+  m Text
+characters1 =
+  pack <$> some character
+
+-- | Parse a white space character
 --
--- >>> parse whitespace "test" " "
--- Right ' '
+-- @(#x20 | #x9 | #xD | #xA)+@.
 --
 -- >>> parse whitespace "test" "\t "
 -- Right '\t'
