@@ -3,13 +3,12 @@
 
 module Text.XML.Nephele where
 
-import Text.Parser.Char
-import Text.Parser.Combinators
-import qualified Text.Parser.Char as C
-import Data.Text(Text, pack, concat)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), String)
-import Control.Applicative
+import Text.Parser.Char(CharParsing(..), char, oneOf)
+import Text.Parser.Combinators(try, between, sepBy)
+import Data.Text(Text, pack, cons, concat)
+import Control.Applicative(Applicative(..), Alternative(..), (<$>))
 import Data.Foldable(asum)
+import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), String)
 
 -- $setup
 -- >>> import Text.Parsec
@@ -78,14 +77,14 @@ comment =
            <|> satisfyRange '\x2E' '\xD7FF'
            <|> satisfyRange '\xE000' '\xFFFD'
            <|> satisfyRange '\x10000' '\x10FFFF'
-      s = (\m c -> [m, c]) <$> C.char '-' <*> nominus
+      s = (\m c -> [m, c]) <$> char '-' <*> nominus
       t = (:[]) <$> nominus
       ch = concat <$> many (pack <$> (try s <|> t))
   in Comment <$> between commentBegin commentEnd ch
 
 -- | Parse a character.
 --
--- @#x9', C.char '\xA', C.char '\xD | [#x20' '\xD7FF] | [#xE000' '\xFFFD] | [#x10000' '\x10FFFF]@.
+-- @#x9', char '\xA', char '\xD | [#x20' '\xD7FF] | [#xE000' '\xFFFD] | [#x10000' '\x10FFFF]@.
 --
 -- >>> parse character "test" "abc"
 -- Right 'a'
@@ -114,7 +113,7 @@ characters1 =
 
 -- | Parse a white space character.
 --
--- @(#x20', C.char '\x9', C.char '\xD', C.char '\xA)+@.
+-- @(#x20', char '\x9', char '\xD', char '\xA)+@.
 --
 -- >>> parse whitespace "test" "\t "
 -- Right '\t'
@@ -174,6 +173,159 @@ whitespaces1 ::
 whitespaces1 =
   pack <$> some whitespace
 
+-- | Parse a name character @Letter | Digit | '.' | '-' | '_' | ':' | CombiningChar |  Extender@.
+--
+-- >>> parse namecharacter "test" "A"
+-- Right 'A'
+--
+-- >>> parse namecharacter "test" "."
+-- Right '.'
+--
+-- >>> parse namecharacter "test" "-"
+-- Right '-'
+--
+-- >>> parse namecharacter "test" "_"
+-- Right '_'
+--
+-- >>> parse namecharacter "test" ":"
+-- Right ':'
+--
+-- >>> parse namecharacter "test" "A"
+-- Right 'A'
+--
+-- >>> parse namecharacter "test" "\231"
+-- Right '\231'
+namecharacter ::
+  CharParsing m =>
+  m Char
+namecharacter =
+  asum [
+    letter
+  , digit
+  , char '.'
+  , char '-'
+  , char '_'
+  , char ':'
+  , combiningcharacter
+  , extender
+  ]
+
+-- | Parse zero or many name characters.
+--
+-- >>> parse namecharacters "test" ""
+-- Right ""
+--
+-- >>> parse namecharacters "test" "A"
+-- Right "A"
+--
+-- >>> parse namecharacters "test" "."
+-- Right "."
+--
+-- >>> parse namecharacters "test" "-"
+-- Right "-"
+--
+-- >>> parse namecharacters "test" "_"
+-- Right "_"
+--
+-- >>> parse namecharacters "test" ":"
+-- Right ":"
+--
+-- >>> parse namecharacters "test" "A"
+-- Right "A"
+--
+-- >>> parse namecharacters "test" "\231"
+-- Right "\231"
+namecharacters ::
+  CharParsing m =>
+  m Text
+namecharacters =
+  pack <$> many namecharacter
+
+-- | Parse one or many name characters.
+--
+-- >>> isn't _Right (parse namecharacters1 "test" "")
+-- True
+--
+-- >>> parse namecharacters1 "test" "A"
+-- Right "A"
+--
+-- >>> parse namecharacters1 "test" "."
+-- Right "."
+--
+-- >>> parse namecharacters1 "test" "-"
+-- Right "-"
+--
+-- >>> parse namecharacters1 "test" "_"
+-- Right "_"
+--
+-- >>> parse namecharacters1 "test" ":"
+-- Right ":"
+--
+-- >>> parse namecharacters1 "test" "A"
+-- Right "A"
+--
+-- >>> parse namecharacters1 "test" "\231"
+-- Right "\231"
+namecharacters1 ::
+  CharParsing m =>
+  m Text
+namecharacters1 =
+  pack <$> some namecharacter
+
+-- | Parse a name @(Letter | '_' | ':') (NameChar)*@.
+--
+-- >>> isn't _Right (parse name "test" "")
+-- True
+--
+-- >>> parse name "test" "A"
+-- Right "A"
+--
+-- >>> parse name "test" "x."
+-- Right "x."
+--
+-- >>> parse name "test" "_-"
+-- Right "_-"
+--
+-- >>> parse name "test" ":_"
+-- Right ":_"
+--
+-- >>> parse name "test" "a:"
+-- Right "a:"
+--
+-- >>> parse name "test" "A:"
+-- Right "A:"
+--
+-- >>> parse name "test" "_\231"
+-- Right "_\231"
+name ::
+  CharParsing m =>
+  m Text
+name =
+  cons <$> (letter <|> char '_' <|> char ':') <*> namecharacters
+
+-- | Parse a names @Name (S Name)*@.
+-- todo cannot use sepBy
+names ::
+  CharParsing m =>
+  m [Text]
+names =
+  name `sepBy` whitespace
+
+-- | Parse a nmtoken @(NameChar)+@.
+nmtoken ::
+  CharParsing m =>
+  m Text
+nmtoken =
+  namecharacters1
+
+-- | Parse nmtokens @Nmtoken (S Nmtoken)*@.
+-- todo cannot use sepBy
+nmtokens ::
+  CharParsing m =>
+  m [Text]
+nmtokens =
+  nmtoken `sepBy` whitespace
+
 -- | Parse a letter @BaseChar |  Ideographic@.
 letter ::
   CharParsing m =>
@@ -202,16 +354,16 @@ basecharacter =
   , satisfyRange '\x01FA' '\x0217'
   , satisfyRange '\x0250' '\x02A8'
   , satisfyRange '\x02BB' '\x02C1'
-  , C.char '\x0386'
+  , char '\x0386'
   , satisfyRange '\x0388' '\x038A'
-  , C.char '\x038C'
+  , char '\x038C'
   , satisfyRange '\x038E' '\x03A1'
   , satisfyRange '\x03A3' '\x03CE'
   , satisfyRange '\x03D0' '\x03D6'
-  , C.char '\x03DA'
-  , C.char '\x03DC'
-  , C.char '\x03DE'
-  , C.char '\x03E0'
+  , char '\x03DA'
+  , char '\x03DC'
+  , char '\x03DE'
+  , char '\x03E0'
   , satisfyRange '\x03E2' '\x03F3'
   , satisfyRange '\x0401' '\x040C'
   , satisfyRange '\x040E' '\x044F'
@@ -224,7 +376,7 @@ basecharacter =
   , satisfyRange '\x04EE' '\x04F5'
   , satisfyRange '\x04F8' '\x04F9'
   , satisfyRange '\x0531' '\x0556'
-  , C.char '\x0559'
+  , char '\x0559'
   , satisfyRange '\x0561' '\x0586'
   , satisfyRange '\x05D0' '\x05EA'
   , satisfyRange '\x05F0' '\x05F2'
@@ -234,16 +386,16 @@ basecharacter =
   , satisfyRange '\x06BA' '\x06BE'
   , satisfyRange '\x06C0' '\x06CE'
   , satisfyRange '\x06D0' '\x06D3'
-  , C.char '\x06D5'
+  , char '\x06D5'
   , satisfyRange '\x06E5' '\x06E6'
   , satisfyRange '\x0905' '\x0939'
-  , C.char '\x093D'
+  , char '\x093D'
   , satisfyRange '\x0958' '\x0961'
   , satisfyRange '\x0985' '\x098C'
   , satisfyRange '\x098F' '\x0990'
   , satisfyRange '\x0993' '\x09A8'
   , satisfyRange '\x09AA' '\x09B0'
-  , C.char '\x09B2'
+  , char '\x09B2'
   , satisfyRange '\x09B6' '\x09B9'
   , satisfyRange '\x09DC' '\x09DD'
   , satisfyRange '\x09DF' '\x09E1'
@@ -256,31 +408,31 @@ basecharacter =
   , satisfyRange '\x0A35' '\x0A36'
   , satisfyRange '\x0A38' '\x0A39'
   , satisfyRange '\x0A59' '\x0A5C'
-  , C.char '\x0A5E'
+  , char '\x0A5E'
   , satisfyRange '\x0A72' '\x0A74'
   , satisfyRange '\x0A85' '\x0A8B'
-  , C.char '\x0A8D'
+  , char '\x0A8D'
   , satisfyRange '\x0A8F' '\x0A91'
   , satisfyRange '\x0A93' '\x0AA8'
   , satisfyRange '\x0AAA' '\x0AB0'
   , satisfyRange '\x0AB2' '\x0AB3'
   , satisfyRange '\x0AB5' '\x0AB9'
-  , C.char '\x0ABD'
-  , C.char '\x0AE0'
+  , char '\x0ABD'
+  , char '\x0AE0'
   , satisfyRange '\x0B05' '\x0B0C'
   , satisfyRange '\x0B0F' '\x0B10'
   , satisfyRange '\x0B13' '\x0B28'
   , satisfyRange '\x0B2A' '\x0B30'
   , satisfyRange '\x0B32' '\x0B33'
   , satisfyRange '\x0B36' '\x0B39'
-  , C.char '\x0B3D'
+  , char '\x0B3D'
   , satisfyRange '\x0B5C' '\x0B5D'
   , satisfyRange '\x0B5F' '\x0B61'
   , satisfyRange '\x0B85' '\x0B8A'
   , satisfyRange '\x0B8E' '\x0B90'
   , satisfyRange '\x0B92' '\x0B95'
   , satisfyRange '\x0B99' '\x0B9A'
-  , C.char '\x0B9C'
+  , char '\x0B9C'
   , satisfyRange '\x0B9E' '\x0B9F'
   , satisfyRange '\x0BA3' '\x0BA4'
   , satisfyRange '\x0BA8' '\x0BAA'
@@ -297,7 +449,7 @@ basecharacter =
   , satisfyRange '\x0C92' '\x0CA8'
   , satisfyRange '\x0CAA' '\x0CB3'
   , satisfyRange '\x0CB5' '\x0CB9'
-  , C.char '\x0CDE'
+  , char '\x0CDE'
   , satisfyRange '\x0CE0' '\x0CE1'
   , satisfyRange '\x0D05' '\x0D0C'
   , satisfyRange '\x0D0E' '\x0D10'
@@ -305,61 +457,61 @@ basecharacter =
   , satisfyRange '\x0D2A' '\x0D39'
   , satisfyRange '\x0D60' '\x0D61'
   , satisfyRange '\x0E01' '\x0E2E'
-  , C.char '\x0E30'
+  , char '\x0E30'
   , satisfyRange '\x0E32' '\x0E33'
   , satisfyRange '\x0E40' '\x0E45'
   , satisfyRange '\x0E81' '\x0E82'
-  , C.char '\x0E84'
+  , char '\x0E84'
   , satisfyRange '\x0E87' '\x0E88'
-  , C.char '\x0E8A'
-  , C.char '\x0E8D'
+  , char '\x0E8A'
+  , char '\x0E8D'
   , satisfyRange '\x0E94' '\x0E97'
   , satisfyRange '\x0E99' '\x0E9F'
   , satisfyRange '\x0EA1' '\x0EA3'
-  , C.char '\x0EA5'
-  , C.char '\x0EA7'
+  , char '\x0EA5'
+  , char '\x0EA7'
   , satisfyRange '\x0EAA' '\x0EAB'
   , satisfyRange '\x0EAD' '\x0EAE'
-  , C.char '\x0EB0'
+  , char '\x0EB0'
   , satisfyRange '\x0EB2' '\x0EB3'
-  , C.char '\x0EBD'
+  , char '\x0EBD'
   , satisfyRange '\x0EC0' '\x0EC4'
   , satisfyRange '\x0F40' '\x0F47'
   , satisfyRange '\x0F49' '\x0F69'
   , satisfyRange '\x10A0' '\x10C5'
   , satisfyRange '\x10D0' '\x10F6'
-  , C.char '\x1100'
+  , char '\x1100'
   , satisfyRange '\x1102' '\x1103'
   , satisfyRange '\x1105' '\x1107'
-  , C.char '\x1109'
+  , char '\x1109'
   , satisfyRange '\x110B' '\x110C'
   , satisfyRange '\x110E' '\x1112'
-  , C.char '\x113C'
-  , C.char '\x113E'
-  , C.char '\x1140'
-  , C.char '\x114C'
-  , C.char '\x114E'
-  , C.char '\x1150'
+  , char '\x113C'
+  , char '\x113E'
+  , char '\x1140'
+  , char '\x114C'
+  , char '\x114E'
+  , char '\x1150'
   , satisfyRange '\x1154' '\x1155'
-  , C.char '\x1159'
+  , char '\x1159'
   , satisfyRange '\x115F' '\x1161'
-  , C.char '\x1163'
-  , C.char '\x1165'
-  , C.char '\x1167'
-  , C.char '\x1169'
+  , char '\x1163'
+  , char '\x1165'
+  , char '\x1167'
+  , char '\x1169'
   , satisfyRange '\x116D' '\x116E'
   , satisfyRange '\x1172' '\x1173'
-  , C.char '\x1175'
-  , C.char '\x119E'
-  , C.char '\x11A8'
-  , C.char '\x11AB'
+  , char '\x1175'
+  , char '\x119E'
+  , char '\x11A8'
+  , char '\x11AB'
   , satisfyRange '\x11AE' '\x11AF'
   , satisfyRange '\x11B7' '\x11B8'
-  , C.char '\x11BA'
+  , char '\x11BA'
   , satisfyRange '\x11BC' '\x11C2'
-  , C.char '\x11EB'
-  , C.char '\x11F0'
-  , C.char '\x11F9'
+  , char '\x11EB'
+  , char '\x11F0'
+  , char '\x11F9'
   , satisfyRange '\x1E00' '\x1E9B'
   , satisfyRange '\x1EA0' '\x1EF9'
   , satisfyRange '\x1F00' '\x1F15'
@@ -367,13 +519,13 @@ basecharacter =
   , satisfyRange '\x1F20' '\x1F45'
   , satisfyRange '\x1F48' '\x1F4D'
   , satisfyRange '\x1F50' '\x1F57'
-  , C.char '\x1F59'
-  , C.char '\x1F5B'
-  , C.char '\x1F5D'
+  , char '\x1F59'
+  , char '\x1F5B'
+  , char '\x1F5D'
   , satisfyRange '\x1F5F' '\x1F7D'
   , satisfyRange '\x1F80' '\x1FB4'
   , satisfyRange '\x1FB6' '\x1FBC'
-  , C.char '\x1FBE'
+  , char '\x1FBE'
   , satisfyRange '\x1FC2' '\x1FC4'
   , satisfyRange '\x1FC6' '\x1FCC'
   , satisfyRange '\x1FD0' '\x1FD3'
@@ -381,9 +533,9 @@ basecharacter =
   , satisfyRange '\x1FE0' '\x1FEC'
   , satisfyRange '\x1FF2' '\x1FF4'
   , satisfyRange '\x1FF6' '\x1FFC'
-  , C.char '\x2126'
+  , char '\x2126'
   , satisfyRange '\x212A' '\x212B'
-  , C.char '\x212E'
+  , char '\x212E'
   , satisfyRange '\x2180' '\x2182'
   , satisfyRange '\x3041' '\x3094'
   , satisfyRange '\x30A1' '\x30FA'
@@ -403,46 +555,46 @@ combiningcharacter =
   , satisfyRange '\x0591' '\x05A1'
   , satisfyRange '\x05A3' '\x05B9'
   , satisfyRange '\x05BB' '\x05BD'
-  , C.char '\x05BF'
+  , char '\x05BF'
   , satisfyRange '\x05C1' '\x05C2'
-  , C.char '\x05C4'
+  , char '\x05C4'
   , satisfyRange '\x064B' '\x0652'
-  , C.char '\x0670'
+  , char '\x0670'
   , satisfyRange '\x06D6' '\x06DC'
   , satisfyRange '\x06DD' '\x06DF'
   , satisfyRange '\x06E0' '\x06E4'
   , satisfyRange '\x06E7' '\x06E8'
   , satisfyRange '\x06EA' '\x06ED'
   , satisfyRange '\x0901' '\x0903'
-  , C.char '\x093C'
+  , char '\x093C'
   , satisfyRange '\x093E' '\x094C'
-  , C.char '\x094D'
+  , char '\x094D'
   , satisfyRange '\x0951' '\x0954'
   , satisfyRange '\x0962' '\x0963'
   , satisfyRange '\x0981' '\x0983'
-  , C.char '\x09BC'
-  , C.char '\x09BE'
-  , C.char '\x09BF'
+  , char '\x09BC'
+  , char '\x09BE'
+  , char '\x09BF'
   , satisfyRange '\x09C0' '\x09C4'
   , satisfyRange '\x09C7' '\x09C8'
   , satisfyRange '\x09CB' '\x09CD'
-  , C.char '\x09D7'
+  , char '\x09D7'
   , satisfyRange '\x09E2' '\x09E3'
-  , C.char '\x0A02'
-  , C.char '\x0A3C'
-  , C.char '\x0A3E'
-  , C.char '\x0A3F'
+  , char '\x0A02'
+  , char '\x0A3C'
+  , char '\x0A3E'
+  , char '\x0A3F'
   , satisfyRange '\x0A40' '\x0A42'
   , satisfyRange '\x0A47' '\x0A48'
   , satisfyRange '\x0A4B' '\x0A4D'
   , satisfyRange '\x0A70' '\x0A71'
   , satisfyRange '\x0A81' '\x0A83'
-  , C.char '\x0ABC'
+  , char '\x0ABC'
   , satisfyRange '\x0ABE' '\x0AC5'
   , satisfyRange '\x0AC7' '\x0AC9'
   , satisfyRange '\x0ACB' '\x0ACD'
   , satisfyRange '\x0B01' '\x0B03'
-  , C.char '\x0B3C'
+  , char '\x0B3C'
   , satisfyRange '\x0B3E' '\x0B43'
   , satisfyRange '\x0B47' '\x0B48'
   , satisfyRange '\x0B4B' '\x0B4D'
@@ -451,7 +603,7 @@ combiningcharacter =
   , satisfyRange '\x0BBE' '\x0BC2'
   , satisfyRange '\x0BC6' '\x0BC8'
   , satisfyRange '\x0BCA' '\x0BCD'
-  , C.char '\x0BD7'
+  , char '\x0BD7'
   , satisfyRange '\x0C01' '\x0C03'
   , satisfyRange '\x0C3E' '\x0C44'
   , satisfyRange '\x0C46' '\x0C48'
@@ -466,32 +618,32 @@ combiningcharacter =
   , satisfyRange '\x0D3E' '\x0D43'
   , satisfyRange '\x0D46' '\x0D48'
   , satisfyRange '\x0D4A' '\x0D4D'
-  , C.char '\x0D57'
-  , C.char '\x0E31'
+  , char '\x0D57'
+  , char '\x0E31'
   , satisfyRange '\x0E34' '\x0E3A'
   , satisfyRange '\x0E47' '\x0E4E'
-  , C.char '\x0EB1'
+  , char '\x0EB1'
   , satisfyRange '\x0EB4' '\x0EB9'
   , satisfyRange '\x0EBB' '\x0EBC'
   , satisfyRange '\x0EC8' '\x0ECD'
   , satisfyRange '\x0F18' '\x0F19'
-  , C.char '\x0F35'
-  , C.char '\x0F37'
-  , C.char '\x0F39'
-  , C.char '\x0F3E'
-  , C.char '\x0F3F'
+  , char '\x0F35'
+  , char '\x0F37'
+  , char '\x0F39'
+  , char '\x0F3E'
+  , char '\x0F3F'
   , satisfyRange '\x0F71' '\x0F84'
   , satisfyRange '\x0F86' '\x0F8B'
   , satisfyRange '\x0F90' '\x0F95'
-  , C.char '\x0F97'
+  , char '\x0F97'
   , satisfyRange '\x0F99' '\x0FAD'
   , satisfyRange '\x0FB1' '\x0FB7'
-  , C.char '\x0FB9'
+  , char '\x0FB9'
   , satisfyRange '\x20D0' '\x20DC'
-  , C.char '\x20E1'
+  , char '\x20E1'
   , satisfyRange '\x302A' '\x302F'
-  , C.char '\x3099'
-  , C.char '\x309A'
+  , char '\x3099'
+  , char '\x309A'
   ]
 
 -- | Parse a digit.
@@ -524,7 +676,7 @@ ideographic ::
 ideographic =
   asum [
     satisfyRange '\x4E00' '\x9FA5'
-  , C.char '\x3007'
+  , char '\x3007'
   , satisfyRange '\x3021' '\x3029'
   ]
 
@@ -534,14 +686,14 @@ extender ::
   m Char
 extender =
   asum [
-    C.char '\x00B7'
-  , C.char '\x02D0'
-  , C.char '\x02D1'
-  , C.char '\x0387'
-  , C.char '\x0640'
-  , C.char '\x0E46'
-  , C.char '\x0EC6'
-  , C.char '\x3005'
+    char '\x00B7'
+  , char '\x02D0'
+  , char '\x02D1'
+  , char '\x0387'
+  , char '\x0640'
+  , char '\x0E46'
+  , char '\x0EC6'
+  , char '\x3005'
   , satisfyRange '\x3031' '\x3035'
   , satisfyRange '\x309D' '\x309E'
   , satisfyRange '\x30FC' '\x30FE'
