@@ -6,9 +6,10 @@ module Text.XML.Nephele where
 import Text.Parser.Char(CharParsing(..), char, oneOf)
 import Text.Parser.Combinators(try, between, sepBy)
 import Data.Text(Text, pack, cons, concat)
-import Control.Applicative(Applicative(..), Alternative(..), (<$>))
+import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
 import Data.Foldable(asum)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), String)
+import Data.List.NonEmpty(NonEmpty(..))
+import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), String, error)
 
 -- $setup
 -- >>> import Text.Parsec
@@ -111,45 +112,58 @@ characters1 ::
 characters1 =
   pack <$> some character
 
+data Whitespace =
+  Space
+  | Tab
+  | CarriageReturn
+  | LineFeed
+  deriving (Eq, Show)
+
 -- | Parse a white space character.
 --
 -- @(#x20', char '\x9', char '\xD', char '\xA)+@.
 --
+-- >>> parse whitespace "test" " "
+-- Right Space
+--
 -- >>> parse whitespace "test" "\t "
--- Right '\t'
+-- Right Tab
 --
 -- >>> parse whitespace "test" "\n\t "
--- Right '\n'
+-- Right LineFeed
 --
 -- >>> parse whitespace "test" "\r\n\t "
--- Right '\r'
+-- Right CarriageReturn
 whitespace ::
   CharParsing m =>
-  m Char
+  m Whitespace
 whitespace =
-  oneOf ['\x0020', '\x9', '\xD', '\xA']
+  Space <$ char '\x20'
+  <|> Tab <$ char '\x9'
+  <|> CarriageReturn <$ char '\xD'
+  <|> LineFeed <$ char '\xA'
 
 -- | Parse zero or many white space characters.
 --
 -- >>> parse whitespaces "test" ""
--- Right ""
+-- Right []
 --
 -- >>> parse whitespaces "test" " "
--- Right " "
+-- Right [Space]
 --
 -- >>> parse whitespaces "test" "    "
--- Right "    "
+-- Right [Space,Space,Space,Space]
 --
 -- >>> parse whitespaces "test" "    abc"
--- Right "    "
+-- Right [Space,Space,Space,Space]
 --
 -- >>> parse whitespaces "test" "  \t  \n "
--- Right "  \t  \n "
+-- Right [Space,Space,Tab,Space,Space,LineFeed,Space]
 whitespaces ::
   CharParsing m =>
-  m Text
+  m [Whitespace]
 whitespaces =
-  pack <$> many whitespace
+  many whitespace
 
 -- | Parse one or many white space characters.
 --
@@ -157,22 +171,22 @@ whitespaces =
 -- True
 --
 -- >>> parse whitespaces1 "test" " "
--- Right " "
+-- Right (Space :| [])
 --
 -- >>> parse whitespaces1 "test" "    "
--- Right "    "
+-- Right (Space :| [Space,Space,Space])
 --
 -- >>> parse whitespaces1 "test" "    abc"
--- Right "    "
+-- Right (Space :| [Space,Space,Space])
 --
 -- >>> parse whitespaces1 "test" "  \t  \n "
--- Right "  \t  \n "
+-- Right (Space :| [Space,Tab,Space,Space,LineFeed,Space])
 whitespaces1 ::
   CharParsing m =>
-  m Text
+  m (NonEmpty Whitespace)
 whitespaces1 =
-  pack <$> some whitespace
-
+  some1 whitespace
+           {-
 -- | Parse a name character @Letter | Digit | '.' | '-' | '_' | ':' | CombiningChar |  Extender@.
 --
 -- >>> parse namecharacter "test" "A"
@@ -698,8 +712,18 @@ extender =
   , satisfyRange '\x309D' '\x309E'
   , satisfyRange '\x30FC' '\x30FE'
   ]
-
+  -}
 -- todo update to latest parsers (>0.10) with this function
 -- https://github.com/ekmett/parsers/pull/23
 satisfyRange :: CharParsing m => Char -> Char -> m Char
 satisfyRange a z = satisfy (\c -> c >= a && c <= z)
+
+-- unsafe
+some1 ::
+  Alternative f =>
+  f a
+  -> f (NonEmpty a)
+some1 x =
+  let unsafe (h:t) = h :| t
+      unsafe [] = error "Expected non-empty list from Alternative#some"
+  in unsafe <$> some x
