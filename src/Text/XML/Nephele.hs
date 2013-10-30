@@ -5,49 +5,81 @@ module Text.XML.Nephele where
 
 import Text.Parser.Char(CharParsing(..), char, oneOf)
 import Text.Parser.Combinators(try, between, sepBy)
-import Data.Text(Text, pack, cons, concat)
+import Data.Text(Text, pack, cons, concat, tail, zip)
 import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
-import Data.Foldable(asum)
+import Data.Foldable(asum, all, any)
 import Data.List.NonEmpty(NonEmpty(..), toList)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), String, error)
+import Data.Maybe(Maybe(..))
+import Control.Lens -- (Reversing(..), Prism', prism')
+import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), Bool, String, error)
 
 -- $setup
 -- >>> import Text.Parsec
 -- >>> import Control.Lens
 -- >>> import Test.QuickCheck
+-- >>> import Test.QuickCheck.Instances
+-- >>> import Data.Maybe
 -- >>> import Prelude
 -- >>> newtype UncommentBegin = UncommentBegin String deriving (Eq, Show)
 -- >>> instance Arbitrary UncommentBegin where arbitrary = fmap UncommentBegin (arbitrary `suchThat` (/= "<!--"))
 -- >>> newtype UncommentEnd = UncommentEnd String deriving (Eq, Show)
 -- >>> instance Arbitrary UncommentEnd where arbitrary = fmap UncommentEnd (arbitrary `suchThat` (/= "-->"))
-
--- | The parser for the beginning of a comment.
---
--- >>> parse commentBegin "test" "<!--"
--- Right "<!--"
---
--- prop> \(UncommentBegin s) -> isn't _Right (parse commentBegin "test" s)
-commentBegin ::
-  CharParsing m =>
-  m Text
-commentBegin =
-  text "<!--"
-
--- | The parser for the end of a comment.
---
--- >>> parse commentEnd "test" "-->"
--- Right "-->"
---
--- prop> \(UncommentEnd s) -> isn't _Right (parse commentEnd "test" s)
-commentEnd ::
-  CharParsing m =>
-  m Text
-commentEnd =
-  text "-->"
+-- >>> instance Arbitrary Comment where arbitrary = arbitrary >>= \t -> maybe arbitrary return (t ^? comment')
 
 newtype Comment =
   Comment Text
+  deriving (Eq, Ord, Show)
+
+-- | Reverses a comment.
+--
+-- >>> reversing <$> (pack "ABC" ^? comment')
+-- Just (Comment "CBA")
+--
+-- prop> reversing (reversing c) == (c :: Comment)
+instance Reversing Comment where
+  reversing (Comment t) =
+    Comment (reversing t)
+
+isCommentCharacter ::
+  Char
+  -> Bool
+isCommentCharacter c =
+  any (c==) ['\x9', '\xA', '\xD'] ||
+  any (\(x, y) -> c >= x && c <= y) [
+    ('\x20', '\x2C')
+  , ('\x2E', '\xD7FF')
+  , ('\xE000', '\xFFFD')
+  , ('\x10000', '\x10FFFF')
+  ]
+
+data CommentResult =
+  InvalidCommentCharacter Char
+  | ConsecutiveHyphenInComment
+  | CommentResult Comment
   deriving (Eq, Show)
+
+isComment ::
+  Text
+  -> CommentResult
+isComment t =
+  let c [] = Nothing
+      c (('-', '-'):_) = Just Nothing
+      c ((p, _):r) = if isCommentCharacter p then undefined else Just (Just 'p')
+  in undefined -- c (zip t (tail t))
+
+-- | Comment prism. A @Comment@ is constructed from @Text@ if it contains all @isCommentCharacter@ and not two consecutive hyphens.
+--
+{-
+comment' ::
+  Prism' Text Comment
+  -}
+undefined = undefined
+                                      {-
+comment' =
+  prism'
+    (\(Comment t) -> t)
+    (\t -> parse comment "comment'" t ^? _Right)
+    -}
 
 -- | The parser for a comment.
 --
@@ -74,14 +106,29 @@ comment ::
 comment =
   -- character without '-'
   let nominus = oneOf ['\x9', '\xA', '\xD']
-           <|> satisfyRange '\x20' '\x2C'
-           <|> satisfyRange '\x2E' '\xD7FF'
-           <|> satisfyRange '\xE000' '\xFFFD'
-           <|> satisfyRange '\x10000' '\x10FFFF'
+                <|> satisfyRange '\x20' '\x2C'
+                <|> satisfyRange '\x2E' '\xD7FF'
+                <|> satisfyRange '\xE000' '\xFFFD'
+                <|> satisfyRange '\x10000' '\x10FFFF'
       s = (\m c -> [m, c]) <$> char '-' <*> nominus
       t = (:[]) <$> nominus
       ch = concat <$> many (pack <$> (try s <|> t))
-  in Comment <$> between commentBegin commentEnd ch
+  in Comment <$> between (text "<!--") (text "-->") ch
+
+newtype Character =
+  Character Char
+  deriving (Eq, Ord, Show)
+
+isCharacter ::
+  Char
+  -> Bool
+isCharacter c =
+  any (c==) ['\x9', '\xA', '\xD'] ||
+  any (\(x, y) -> c >= x && c <= y) [
+    ('\x20', '\xD7FF')
+  , ('\xE000', '\xFFFD')
+  , ('\x10000', '\x10FFFF')
+  ]
 
 -- | Parse a character.
 --

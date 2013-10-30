@@ -63,6 +63,7 @@ test-suite doctests
                     , filepath >= 1.3
                     , directory >= 1.1
                     , QuickCheck >= 2.0
+                    , quickcheck-instances >= 0.3.3
 
   ghc-options:
                     -Wall

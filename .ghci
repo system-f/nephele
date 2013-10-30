@@ -2,7 +2,7 @@
 :set -optP-include -optPdist/build/autogen/cabal_macros.h
 :set prompt ">> "
 :set -Wall
-:m + Text.Parsec
+:m + Text.Parsec(parse, runParser, runParserT, runP, runPT)
 :m + Text.Parser.Char
 :m + Text.Parser.Combinators
 :m + Control.Lens
