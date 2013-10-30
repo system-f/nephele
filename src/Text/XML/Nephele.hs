@@ -52,6 +52,9 @@ isCommentCharacter c =
   , ('\x10000', '\x10FFFF')
   ]
 
+-- <donri> dobblego: how about, add an associated type to CharParsing for the error type, maybe default it to String and make unexpected and <?> use that type
+-- <donri> class CharParsing a where type Err a = String
+
 data CommentResult =
   InvalidCommentCharacter Char
   | ConsecutiveHyphenInComment
