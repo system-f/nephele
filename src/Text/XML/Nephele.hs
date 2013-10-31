@@ -5,6 +5,8 @@ module Text.XML.Nephele where
 
 import Text.Parser.Char(CharParsing(..), char, oneOf)
 import Text.Parser.Combinators(try, between, sepBy)
+import Text.Parsec(parse)
+import Text.Parsec.Text()
 import Data.Text(Text, pack, cons, concat, tail, zip)
 import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
 import Data.Foldable(asum, all, any)
@@ -24,7 +26,9 @@ import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), Bool, String, error)
 -- >>> instance Arbitrary UncommentBegin where arbitrary = fmap UncommentBegin (arbitrary `suchThat` (/= "<!--"))
 -- >>> newtype UncommentEnd = UncommentEnd String deriving (Eq, Show)
 -- >>> instance Arbitrary UncommentEnd where arbitrary = fmap UncommentEnd (arbitrary `suchThat` (/= "-->"))
--- >>> instance Arbitrary Comment where arbitrary = arbitrary >>= \t -> maybe arbitrary return (t ^? comment')
+
+-- >> instance Arbitrary Comment where arbitrary = arbitrary >>= \t -> maybe arbitrary return (parse commentCharacters "instance Arbitrary Comment" (t :: Text) ^? _Right)
+-- >>> instance Arbitrary Comment where arbitrary = arbitrary `suchThat` (isn't _Left . parse commentCharacters "instance Arbitrary Comment")
 
 newtype Comment =
   Comment Text
@@ -32,7 +36,7 @@ newtype Comment =
 
 -- | Reverses a comment.
 --
--- >>> reversing <$> (pack "ABC" ^? comment')
+-- >>> reversing <$> (pack "<!--ABC-->" ^? comment')
 -- Just (Comment "CBA")
 --
 -- prop> reversing (reversing c) == (c :: Comment)
@@ -40,49 +44,31 @@ instance Reversing Comment where
   reversing (Comment t) =
     Comment (reversing t)
 
-isCommentCharacter ::
-  Char
-  -> Bool
-isCommentCharacter c =
-  any (c==) ['\x9', '\xA', '\xD'] ||
-  any (\(x, y) -> c >= x && c <= y) [
-    ('\x20', '\x2C')
-  , ('\x2E', '\xD7FF')
-  , ('\xE000', '\xFFFD')
-  , ('\x10000', '\x10FFFF')
-  ]
+commentCharacters ::
+  CharParsing m =>
+  m Comment
+commentCharacters =
+  -- character without '-'
+  let nominus = oneOf ['\x9', '\xA', '\xD']
+                <|> satisfyRange '\x20' '\x2C'
+                <|> satisfyRange '\x2E' '\xD7FF'
+                <|> satisfyRange '\xE000' '\xFFFD'
+                <|> satisfyRange '\x10000' '\x10FFFF'
+      s = (\m c -> [m, c]) <$> char '-' <*> nominus
+      t = (:[]) <$> nominus
+      ch = concat <$> many (pack <$> (try s <|> t))
+  in Comment <$> ch
 
--- <donri> dobblego: how about, add an associated type to CharParsing for the error type, maybe default it to String and make unexpected and <?> use that type
--- <donri> class CharParsing a where type Err a = String
-
-data CommentResult =
-  InvalidCommentCharacter Char
-  | ConsecutiveHyphenInComment
-  | CommentResult Comment
-  deriving (Eq, Show)
-
-isComment ::
-  Text
-  -> CommentResult
-isComment t =
-  let c [] = Nothing
-      c (('-', '-'):_) = Just Nothing
-      c ((p, _):r) = if isCommentCharacter p then undefined else Just (Just 'p')
-  in undefined -- c (zip t (tail t))
-
--- | Comment prism. A @Comment@ is constructed from @Text@ if it contains all @isCommentCharacter@ and not two consecutive hyphens.
+-- | Comment prism from text.
 --
-{-
+-- >>> pack "abc" ^? comment'
+-- sdfsdf
 comment' ::
   Prism' Text Comment
-  -}
-undefined = undefined
-                                      {-
 comment' =
   prism'
     (\(Comment t) -> t)
     (\t -> parse comment "comment'" t ^? _Right)
-    -}
 
 -- | The parser for a comment.
 --
@@ -107,31 +93,11 @@ comment ::
   CharParsing m =>
   m Comment
 comment =
-  -- character without '-'
-  let nominus = oneOf ['\x9', '\xA', '\xD']
-                <|> satisfyRange '\x20' '\x2C'
-                <|> satisfyRange '\x2E' '\xD7FF'
-                <|> satisfyRange '\xE000' '\xFFFD'
-                <|> satisfyRange '\x10000' '\x10FFFF'
-      s = (\m c -> [m, c]) <$> char '-' <*> nominus
-      t = (:[]) <$> nominus
-      ch = concat <$> many (pack <$> (try s <|> t))
-  in Comment <$> between (text "<!--") (text "-->") ch
+  between (text "<!--") (text "-->") commentCharacters
 
 newtype Character =
   Character Char
   deriving (Eq, Ord, Show)
-
-isCharacter ::
-  Char
-  -> Bool
-isCharacter c =
-  any (c==) ['\x9', '\xA', '\xD'] ||
-  any (\(x, y) -> c >= x && c <= y) [
-    ('\x20', '\xD7FF')
-  , ('\xE000', '\xFFFD')
-  , ('\x10000', '\x10FFFF')
-  ]
 
 -- | Parse a character.
 --
