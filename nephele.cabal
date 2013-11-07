@@ -46,6 +46,7 @@ library
 
   exposed-modules:
                       Text.XML.Nephele
+                      , Text.XML.Nephele.BaseCharacter
                       , Text.XML.Nephele.Character
                       , Text.XML.Nephele.CombiningCharacter
                       , Text.XML.Nephele.Comment
