@@ -28,7 +28,7 @@ data Whitespace =
 
 -- | Parse a white space character.
 --
--- @(#x20', char '\x9', char '\xD', char '\xA)+@.
+-- @(#x20', char '\x9', char '\xD', char '\xA)@.
 --
 -- >>> parse whitespace "test" " "
 -- Right Space

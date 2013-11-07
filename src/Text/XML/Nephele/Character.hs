@@ -25,7 +25,7 @@ newtype Character =
 
 -- | Parse a character.
 --
--- @#x9', char '\xA', char '\xD | [#x20' '\xD7FF] | [#xE000' '\xFFFD] | [#x10000' '\x10FFFF]@.
+-- @#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]@.
 --
 -- >>> parse character "test" "abc"
 -- Right (Character 'a')

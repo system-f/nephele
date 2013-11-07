@@ -6,6 +6,7 @@ module Text.XML.Nephele(module N) where
 import Text.XML.Nephele.Character as N
 import Text.XML.Nephele.Comment as N
 import Text.XML.Nephele.Extender as N
+import Text.XML.Nephele.Ideographic as N
 import Text.XML.Nephele.Whitespace as N
 
 {-
@@ -528,3 +529,4 @@ ideographic =
   , char '\x3007'
   , satisfyRange '\x3021' '\x3029'
   ]
+                                   -}

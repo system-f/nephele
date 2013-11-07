@@ -26,7 +26,7 @@ newtype Extender =
 
 -- | Parse an extender.
 --
--- @#x9', char '\xA', char '\xD | [#x20' '\xD7FF] | [#xE000' '\xFFFD] | [#x10000' '\x10FFFF]@.
+-- @#x00B7 | #x02D0 | #x02D1 | #x0387 | #x0640 | #x0E46 | #x0EC6 | #x3005 | [#x3031-#x3035] | [#x309D-#x309E] | [#x30FC-#x30FE]@.
 --
 -- >>> parse extender "test" "abc"
 -- Right (Extender 'a')
