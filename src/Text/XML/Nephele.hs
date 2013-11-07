@@ -10,6 +10,7 @@ import Text.XML.Nephele.Comment as N
 import Text.XML.Nephele.Digit as N
 import Text.XML.Nephele.Extender as N
 import Text.XML.Nephele.Ideographic as N
+import Text.XML.Nephele.Letter as N
 import Text.XML.Nephele.Whitespace as N
 
 {-
