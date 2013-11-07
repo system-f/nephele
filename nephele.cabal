@@ -28,7 +28,7 @@ library
 
   build-depends:
                       base < 5 && >= 3
-                      , parsers >= 0.10
+                      , parsers >= 0.10.1
                       , lens >= 3.10
                       , text >= 0.11
                       , transformers >= 0.3
@@ -45,29 +45,32 @@ library
                       src
 
   exposed-modules:
-                    Text.XML.Nephele
+                      Text.XML.Nephele
+                      , Text.XML.Nephele.Character
+                      , Text.XML.Nephele.Comment
+                      , Text.XML.Nephele.Whitespace
 
 test-suite doctests
   type:
-                    exitcode-stdio-1.0
+                      exitcode-stdio-1.0
 
   main-is:
-                    doctests.hs
+                      doctests.hs
 
   default-language:
-                    Haskell2010
+                      Haskell2010
 
   build-depends:
-                    base < 5 && >= 3
-                    , doctest >= 0.9.7
-                    , filepath >= 1.3
-                    , directory >= 1.1
-                    , QuickCheck >= 2.0
-                    , quickcheck-instances >= 0.3.3
+                      base < 5 && >= 3
+                      , doctest >= 0.9.7
+                      , filepath >= 1.3
+                      , directory >= 1.1
+                      , QuickCheck >= 2.0
+                      , quickcheck-instances >= 0.3.3
 
   ghc-options:
-                    -Wall
-                    -threaded
+                      -Wall
+                      -threaded
 
   hs-source-dirs:
-                    test
+                      test
