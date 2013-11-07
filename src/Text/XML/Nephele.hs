@@ -7,13 +7,13 @@ import Text.Parser.Char(CharParsing(..), char, oneOf)
 import Text.Parser.Combinators(try, between, sepBy)
 import Text.Parsec(parse)
 import Text.Parsec.Text()
-import Data.Text(Text, pack, cons, concat, tail, zip)
+import Data.Text(Text, pack, cons, concat, tail, zip, singleton)
 import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
 import Data.Foldable(asum, all, any)
 import Data.List.NonEmpty(NonEmpty(..), toList)
 import Data.Maybe(Maybe(..))
 import Control.Lens -- (Reversing(..), Prism', prism')
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), Bool, String, error)
+import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
 -- $setup
 -- >>> import Text.Parsec
@@ -22,13 +22,13 @@ import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), Bool, String, error)
 -- >>> import Test.QuickCheck.Instances
 -- >>> import Data.Maybe
 -- >>> import Prelude
+-- >>> -- is this function required? http://lpaste.net/95317
+-- >>> let generateUntilJust gen p = let try _ 0 = return Nothing; try k n = do x <- resize (2*k+n) gen; maybe (try (k+1) (n-1)) (return . Just) (p x) in do mx <- sized (try 0 . max 1); case mx of Just x  -> return x; Nothing -> sized (\n -> resize (n+1) (generateUntilJust gen p))
 -- >>> newtype UncommentBegin = UncommentBegin String deriving (Eq, Show)
 -- >>> instance Arbitrary UncommentBegin where arbitrary = fmap UncommentBegin (arbitrary `suchThat` (/= "<!--"))
 -- >>> newtype UncommentEnd = UncommentEnd String deriving (Eq, Show)
 -- >>> instance Arbitrary UncommentEnd where arbitrary = fmap UncommentEnd (arbitrary `suchThat` (/= "-->"))
-
--- >> instance Arbitrary Comment where arbitrary = arbitrary >>= \t -> maybe arbitrary return (parse commentCharacters "instance Arbitrary Comment" (t :: Text) ^? _Right)
--- >>> instance Arbitrary Comment where arbitrary = arbitrary `suchThat` (isn't _Left . parse commentCharacters "instance Arbitrary Comment")
+-- >>> instance Arbitrary Comment where arbitrary = generateUntilJust arbitrary ((^? _Right) . parse commentCharacters "instance Arbitrary Comment" . pack)
 
 newtype Comment =
   Comment Text
@@ -36,7 +36,7 @@ newtype Comment =
 
 -- | Reverses a comment.
 --
--- >>> reversing <$> (pack "<!--ABC-->" ^? comment')
+-- >>> reversing <$> (pack "ABC" ^? comment')
 -- Just (Comment "CBA")
 --
 -- prop> reversing (reversing c) == (c :: Comment)
@@ -44,6 +44,25 @@ instance Reversing Comment where
   reversing (Comment t) =
     Comment (reversing t)
 
+-- | The parser for the characters that make up a comment.
+--
+-- >>> parse commentCharacters "test" ""
+-- Right (Comment "")
+--
+-- >>> parse commentCharacters "test" " abc "
+-- Right (Comment " abc ")
+--
+-- >>> parse commentCharacters "test" " a-bc "
+-- Right (Comment " a-bc ")
+--
+-- >>> parse commentCharacters "test" " a-b-c "
+-- Right (Comment " a-b-c ")
+--
+-- >>> parse commentCharacters "test" " a-bb-cc "
+-- Right (Comment " a-bb-cc ")
+--
+-- >>> parse commentCharacters "test" " abc- "
+-- Right (Comment " abc- ")
 commentCharacters ::
   CharParsing m =>
   m Comment
@@ -58,17 +77,6 @@ commentCharacters =
       t = (:[]) <$> nominus
       ch = concat <$> many (pack <$> (try s <|> t))
   in Comment <$> ch
-
--- | Comment prism from text.
---
--- >>> pack "abc" ^? comment'
--- sdfsdf
-comment' ::
-  Prism' Text Comment
-comment' =
-  prism'
-    (\(Comment t) -> t)
-    (\t -> parse comment "comment'" t ^? _Right)
 
 -- | The parser for a comment.
 --
@@ -95,6 +103,17 @@ comment ::
 comment =
   between (text "<!--") (text "-->") commentCharacters
 
+-- | Comment prism from text.
+--
+-- >>> pack "abc" ^? comment'
+-- Just (Comment "abc")
+comment' ::
+  Prism' Text Comment
+comment' =
+  prism'
+    (\(Comment t) -> t)
+    ((^? _Right) . parse commentCharacters "comment'")
+
 newtype Character =
   Character Char
   deriving (Eq, Ord, Show)
@@ -104,29 +123,52 @@ newtype Character =
 -- @#x9', char '\xA', char '\xD | [#x20' '\xD7FF] | [#xE000' '\xFFFD] | [#x10000' '\x10FFFF]@.
 --
 -- >>> parse character "test" "abc"
--- Right 'a'
+-- Right (Character 'a')
 character ::
   CharParsing m =>
-  m Char
+  m Character
 character =
-  oneOf ['\x9', '\xA', '\xD']
-  <|> satisfyRange '\x20' '\xD7FF'
-  <|> satisfyRange '\xE000' '\xFFFD'
-  <|> satisfyRange '\x10000' '\x10FFFF'
+  let c = oneOf ['\x9', '\xA', '\xD']
+          <|> satisfyRange '\x20' '\xD7FF'
+          <|> satisfyRange '\xE000' '\xFFFD'
+          <|> satisfyRange '\x10000' '\x10FFFF'
+  in Character <$> c        
 
 -- | Parse zero or many characters.
 characters ::
   CharParsing m =>
-  m Text
+  m [Character]
 characters =
-  pack <$> many character
+  many character
 
 -- | Parse one or many characters.
 characters1 ::
   CharParsing m =>
-  m Text
+  m (NonEmpty Character)
 characters1 =
-  pack <$> some character
+  some1 character
+
+-- | Character prism from a char.
+--
+-- >>> 'a' ^? character'
+-- Just (Character 'a')
+character' ::
+  Prism' Char Character
+character' =
+  prism'
+    (\(Character c) -> c)
+    ((^? _Right) . parse character "character'" . singleton)
+
+-- | Character prism from text.
+--
+-- >>> pack "abc" ^? characters'
+-- Just (Character 'a')
+characters' ::
+  Prism' Text Character
+characters' =
+  prism'
+    (\(Character c) -> singleton c)
+    ((^? _Right) . parse character "character'")
 
 data Whitespace =
   Space
@@ -202,6 +244,57 @@ whitespaces1 ::
   m (NonEmpty Whitespace)
 whitespaces1 =
   some1 whitespace
+
+-- | Whitespace prism from a char.
+--
+-- >>> ' ' ^? whitespace'
+-- Just Space
+--
+-- >>> '\t' ^? whitespace'
+-- Just Tab
+--
+-- >>> '\r' ^? whitespace'
+-- Just CarriageReturn
+--
+-- >>> '\n' ^? whitespace'
+-- Just LineFeed
+whitespace' ::
+  Prism' Char Whitespace
+whitespace' =
+  prism'
+    (\w -> case w of
+             Space -> '\x20'
+             Tab -> '\x9'
+             CarriageReturn -> '\xD'
+             LineFeed -> '\xA')
+    ((^? _Right) . parse whitespace "whitespace'" . singleton)
+
+-- | Whitespace prism from text.
+--
+-- >>> pack " " ^? whitespaces'
+-- Just Space
+--
+-- >>> pack "\t" ^? whitespaces'
+-- Just Tab
+--
+-- >>> pack "\r" ^? whitespaces'
+-- Just CarriageReturn
+--
+-- >>> pack "\n" ^? whitespaces'
+-- Just LineFeed
+whitespaces' ::
+  Prism' Text Whitespace
+whitespaces' =
+  prism'
+    (\w -> singleton $ case w of
+                         Space -> '\x20'
+                         Tab -> '\x9'
+                         CarriageReturn -> '\xD'
+                         LineFeed -> '\xA')
+    ((^? _Right) . parse whitespace "character'")
+
+
+
            {-
 -- | Parse a name character @Letter | Digit | '.' | '-' | '_' | ':' | CombiningChar |  Extender@.
 --
