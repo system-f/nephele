@@ -10,15 +10,12 @@ module Text.XML.Nephele.Character(
 , characters'
 ) where
 
-import Text.Parser.Char(CharParsing(..), char, oneOf, satisfyRange)
-import Text.Parser.Combinators(try, between, sepBy)
+import Text.Parser.Char(CharParsing(..), oneOf, satisfyRange)
 import Text.Parsec(parse)
 import Text.Parsec.Text()
-import Data.Text(Text, pack, cons, concat, tail, zip, singleton)
-import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
-import Data.Foldable(asum, all, any)
+import Data.Text(Text, singleton)
+import Control.Applicative(Applicative(..), Alternative(..), (<$>))
 import Data.List.NonEmpty(NonEmpty(..), toList)
-import Data.Maybe(Maybe(..))
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 

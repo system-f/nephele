@@ -48,6 +48,7 @@ library
                       Text.XML.Nephele
                       , Text.XML.Nephele.Character
                       , Text.XML.Nephele.Comment
+                      , Text.XML.Nephele.Extender
                       , Text.XML.Nephele.Whitespace
 
 test-suite doctests

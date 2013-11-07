@@ -5,6 +5,7 @@ module Text.XML.Nephele(module N) where
 
 import Text.XML.Nephele.Character as N
 import Text.XML.Nephele.Comment as N
+import Text.XML.Nephele.Extender as N
 import Text.XML.Nephele.Whitespace as N
 
 {-
@@ -527,23 +528,3 @@ ideographic =
   , char '\x3007'
   , satisfyRange '\x3021' '\x3029'
   ]
-
--- | Parse an extender.
-extender ::
-  CharParsing m =>
-  m Char
-extender =
-  asum [
-    char '\x00B7'
-  , char '\x02D0'
-  , char '\x02D1'
-  , char '\x0387'
-  , char '\x0640'
-  , char '\x0E46'
-  , char '\x0EC6'
-  , char '\x3005'
-  , satisfyRange '\x3031' '\x3035'
-  , satisfyRange '\x309D' '\x309E'
-  , satisfyRange '\x30FC' '\x30FE'
-  ]
-  -}
