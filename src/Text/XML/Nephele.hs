@@ -5,6 +5,7 @@ module Text.XML.Nephele(module N) where
 
 import Text.XML.Nephele.Character as N
 import Text.XML.Nephele.Comment as N
+import Text.XML.Nephele.Digit as N
 import Text.XML.Nephele.Extender as N
 import Text.XML.Nephele.Ideographic as N
 import Text.XML.Nephele.Whitespace as N
@@ -496,37 +497,5 @@ combiningcharacter =
   , char '\x309A'
   ]
 
--- | Parse a digit.
-digit ::
-  CharParsing m =>
-  m Char
-digit =
-  asum [
-    satisfyRange '\x0030' '\x0039'
-  , satisfyRange '\x0660' '\x0669'
-  , satisfyRange '\x06F0' '\x06F9'
-  , satisfyRange '\x0966' '\x096F'
-  , satisfyRange '\x09E6' '\x09EF'
-  , satisfyRange '\x0A66' '\x0A6F'
-  , satisfyRange '\x0AE6' '\x0AEF'
-  , satisfyRange '\x0B66' '\x0B6F'
-  , satisfyRange '\x0BE7' '\x0BEF'
-  , satisfyRange '\x0C66' '\x0C6F'
-  , satisfyRange '\x0CE6' '\x0CEF'
-  , satisfyRange '\x0D66' '\x0D6F'
-  , satisfyRange '\x0E50' '\x0E59'
-  , satisfyRange '\x0ED0' '\x0ED9'
-  , satisfyRange '\x0F20' '\x0F29'
-  ]
 
--- | Parse an ideographic.
-ideographic ::
-  CharParsing m =>
-  m Char
-ideographic =
-  asum [
-    satisfyRange '\x4E00' '\x9FA5'
-  , char '\x3007'
-  , satisfyRange '\x3021' '\x3029'
-  ]
                                    -}
