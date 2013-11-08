@@ -180,12 +180,5 @@ nmtokens ::
 nmtokens =
   nmtoken `sepBy` whitespace
 
--- | Parse a letter @BaseChar |  Ideographic@.
-letter ::
-  CharParsing m =>
-  m Char
-letter =
-  basecharacter <|> ideographic
-
 
                                    -}
