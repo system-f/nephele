@@ -1,24 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Text.XML.Nephele.Letter {-(
+module Text.XML.Nephele.Letter(
   Letter
 , letter
 , letters
 , letters1
 , letter'
-, letters'
-) -} where
+) where
 
-import Text.Parser.Char(CharParsing(..), satisfyRange)
-import Text.Parsec(parse)
+import Text.Parser.Char(CharParsing(..))
 import Text.Parsec.Text()
-import Data.Text(Text, singleton)
 import Control.Applicative(Applicative(..), Alternative(..), (<$>))
-import Data.Foldable(asum)
 import Data.List.NonEmpty(NonEmpty(..), toList)
-import Control.Lens(Prism', prism', (^?), _Right)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
+import Control.Lens(Iso', iso)
+import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
 import Text.XML.Nephele.BaseCharacter(BaseCharacter, baseCharacter)
 import Text.XML.Nephele.Ideographic(Ideographic, ideographic)
 
@@ -53,31 +49,18 @@ letters1 ::
 letters1 =
   some1 letter
 
--- Prism c a -> Prism c b -> Prism c (Either a b)
-
--- | Letter prism from a char.
+-- | Letter isomorphism from either a @BaseCharacter@ or @Ideographic@.
 --
--- >>> 'a' ^? letter'
--- Just (Letter 'a')
-{-
+-- >>> letter'
+-- sdf
 letter' ::
-  Prism' Char Letter
+  Iso' Letter (Either BaseCharacter Ideographic)
 letter' =
-  prism'
-    (\(Letter c) -> c)
-    ((^? _Right) . parse letter "letter'" . singleton)
+  iso (\l -> case l of
+               BaseCharacterLetter c -> Left c
+               IdeographicLetter c -> Right c)
+      (either BaseCharacterLetter IdeographicLetter)
 
--- | Letter prism from text.
---
--- >>> pack "abc" ^? letters'
--- Just (Letter 'a')
-letters' ::
-  Prism' Text Letter
-letters' =
-  prism'
-    (\(Letter c) -> singleton c)
-    ((^? _Right) . parse letter "letter'")
-  -}
 -- todo move to utility
 some1 ::
   Alternative f =>
