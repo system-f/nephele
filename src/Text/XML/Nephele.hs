@@ -13,6 +13,7 @@ import Text.XML.Nephele.Ideographic as N
 import Text.XML.Nephele.Letter as N
 import Text.XML.Nephele.Name as N
 import Text.XML.Nephele.NameCharacter as N
+import Text.XML.Nephele.Nmtokens as N
 import Text.XML.Nephele.Whitespace as N
 
 {-
@@ -27,45 +28,6 @@ import Data.List.NonEmpty(NonEmpty(..), toList)
 import Data.Maybe(Maybe(..))
 import Control.Lens -- (Reversing(..), Prism', prism')
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
-
--- | Parse a name @(Letter | '_' | ':') (NameChar)*@.
---
--- >>> isn't _Right (parse name "test" "")
--- True
---
--- >>> parse name "test" "A"
--- Right "A"
---
--- >>> parse name "test" "x."
--- Right "x."
---
--- >>> parse name "test" "_-"
--- Right "_-"
---
--- >>> parse name "test" ":_"
--- Right ":_"
---
--- >>> parse name "test" "a:"
--- Right "a:"
---
--- >>> parse name "test" "A:"
--- Right "A:"
---
--- >>> parse name "test" "_\231"
--- Right "_\231"
-name ::
-  CharParsing m =>
-  m Text
-name =
-  cons <$> (letter <|> char '_' <|> char ':') <*> namecharacters
-
--- | Parse a names @Name (S Name)*@.
--- todo cannot use sepBy
-names ::
-  CharParsing m =>
-  m [Text]
-names =
-  name `sepBy` whitespace
 
 -- | Parse a nmtoken @(NameChar)+@.
 nmtoken ::
