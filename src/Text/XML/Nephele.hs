@@ -11,6 +11,7 @@ import Text.XML.Nephele.Digit as N
 import Text.XML.Nephele.Extender as N
 import Text.XML.Nephele.Ideographic as N
 import Text.XML.Nephele.Letter as N
+import Text.XML.Nephele.Name as N
 import Text.XML.Nephele.NameCharacter as N
 import Text.XML.Nephele.Whitespace as N
 
@@ -26,106 +27,6 @@ import Data.List.NonEmpty(NonEmpty(..), toList)
 import Data.Maybe(Maybe(..))
 import Control.Lens -- (Reversing(..), Prism', prism')
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
-
-
--- | Parse a name character @Letter | Digit | '.' | '-' | '_' | ':' | CombiningChar |  Extender@.
---
--- >>> parse namecharacter "test" "A"
--- Right 'A'
---
--- >>> parse namecharacter "test" "."
--- Right '.'
---
--- >>> parse namecharacter "test" "-"
--- Right '-'
---
--- >>> parse namecharacter "test" "_"
--- Right '_'
---
--- >>> parse namecharacter "test" ":"
--- Right ':'
---
--- >>> parse namecharacter "test" "A"
--- Right 'A'
---
--- >>> parse namecharacter "test" "\231"
--- Right '\231'
-namecharacter ::
-  CharParsing m =>
-  m Char
-namecharacter =
-  asum [
-    letter
-  , digit
-  , char '.'
-  , char '-'
-  , char '_'
-  , char ':'
-  , combiningcharacter
-  , extender
-  ]
-
--- | Parse zero or many name characters.
---
--- >>> parse namecharacters "test" ""
--- Right ""
---
--- >>> parse namecharacters "test" "A"
--- Right "A"
---
--- >>> parse namecharacters "test" "."
--- Right "."
---
--- >>> parse namecharacters "test" "-"
--- Right "-"
---
--- >>> parse namecharacters "test" "_"
--- Right "_"
---
--- >>> parse namecharacters "test" ":"
--- Right ":"
---
--- >>> parse namecharacters "test" "A"
--- Right "A"
---
--- >>> parse namecharacters "test" "\231"
--- Right "\231"
-namecharacters ::
-  CharParsing m =>
-  m Text
-namecharacters =
-  pack <$> many namecharacter
-
--- | Parse one or many name characters.
---
--- >>> isn't _Right (parse namecharacters1 "test" "")
--- True
---
--- >>> parse namecharacters1 "test" "A"
--- Right "A"
---
--- >>> parse namecharacters1 "test" "."
--- Right "."
---
--- >>> parse namecharacters1 "test" "-"
--- Right "-"
---
--- >>> parse namecharacters1 "test" "_"
--- Right "_"
---
--- >>> parse namecharacters1 "test" ":"
--- Right ":"
---
--- >>> parse namecharacters1 "test" "A"
--- Right "A"
---
--- >>> parse namecharacters1 "test" "\231"
--- Right "\231"
-namecharacters1 ::
-  CharParsing m =>
-  m Text
-namecharacters1 =
-  pack <$> some namecharacter
 
 -- | Parse a name @(Letter | '_' | ':') (NameChar)*@.
 --
