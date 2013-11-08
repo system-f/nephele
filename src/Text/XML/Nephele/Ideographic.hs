@@ -20,6 +20,9 @@ import Data.List.NonEmpty(NonEmpty(..), toList)
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
+-- $setup
+-- >>> import Data.Text
+
 newtype Ideographic =
   Ideographic Char
   deriving (Eq, Ord, Show)
@@ -28,8 +31,8 @@ newtype Ideographic =
 --
 -- @[#x4E00-#x9FA5] | #x3007 | [#x3021-#x3029]@.
 --
--- >>> parse ideographic "test" "abc"
--- Right (Ideographic 'a')
+-- >>> parse ideographic "test" "\20016bc"
+-- Right (Ideographic '\20016')
 ideographic ::
   CharParsing m =>
   m Ideographic
@@ -58,8 +61,8 @@ ideographics1 =
 
 -- | Ideographic prism from a char.
 --
--- >>> 'a' ^? ideographic'
--- Just (Ideographic 'a')
+-- >>> '\20016' ^? ideographic'
+-- Just (Ideographic '\20016')
 ideographic' ::
   Prism' Char Ideographic
 ideographic' =
@@ -69,8 +72,8 @@ ideographic' =
 
 -- | Ideographic prism from text.
 --
--- >>> pack "abc" ^? ideographics'
--- Just (Ideographic 'a')
+-- >>> pack "\20016bc" ^? ideographics'
+-- Just (Ideographic '\20016')
 ideographics' ::
   Prism' Text Ideographic
 ideographics' =

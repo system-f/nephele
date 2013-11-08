@@ -20,6 +20,9 @@ import Data.List.NonEmpty(NonEmpty(..), toList)
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
+-- $setup
+-- >>> import Data.Text
+
 newtype Digit =
   Digit Char
   deriving (Eq, Ord, Show)
@@ -28,8 +31,8 @@ newtype Digit =
 --
 -- @[#x0030-#x0039] | [#x0660-#x0669] | [#x06F0-#x06F9] | [#x0966-#x096F] | [#x09E6-#x09EF] | [#x0A66-#x0A6F] | [#x0AE6-#x0AEF] | [#x0B66-#x0B6F] | [#x0BE7-#x0BEF] | [#x0C66-#x0C6F] | [#x0CE6-#x0CEF] | [#x0D66-#x0D6F] | [#x0E50-#x0E59] | [#x0ED0-#x0ED9] | [#x0F20-#x0F29]@.
 --
--- >>> parse digit "test" "abc"
--- Right (Digit 'a')
+-- >>> parse digit "test" "5bc"
+-- Right (Digit '5')
 digit ::
   CharParsing m =>
   m Digit
@@ -69,8 +72,8 @@ digits1 =
 
 -- | Digit prism from a char.
 --
--- >>> 'a' ^? digit'
--- Just (Digit 'a')
+-- >>> '5' ^? digit'
+-- Just (Digit '5')
 digit' ::
   Prism' Char Digit
 digit' =
@@ -80,8 +83,8 @@ digit' =
 
 -- | Digit prism from text.
 --
--- >>> pack "abc" ^? digits'
--- Just (Digit 'a')
+-- >>> pack "5bc" ^? digits'
+-- Just (Digit '5')
 digits' ::
   Prism' Text Digit
 digits' =

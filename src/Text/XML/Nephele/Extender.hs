@@ -20,6 +20,9 @@ import Data.List.NonEmpty(NonEmpty(..), toList)
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
+-- $setup
+-- >>> import Data.Text
+
 newtype Extender =
   Extender Char
   deriving (Eq, Ord, Show)
@@ -28,8 +31,8 @@ newtype Extender =
 --
 -- @#x00B7 | #x02D0 | #x02D1 | #x0387 | #x0640 | #x0E46 | #x0EC6 | #x3005 | [#x3031-#x3035] | [#x309D-#x309E] | [#x30FC-#x30FE]@.
 --
--- >>> parse extender "test" "abc"
--- Right (Extender 'a')
+-- >>> parse extender "test" "\721bc"
+-- Right (Extender '\721')
 extender ::
   CharParsing m =>
   m Extender
@@ -65,8 +68,8 @@ extenders1 =
 
 -- | Extender prism from a char.
 --
--- >>> 'a' ^? extender'
--- Just (Extender 'a')
+-- >>> '\721' ^? extender'
+-- Just (Extender '\721')
 extender' ::
   Prism' Char Extender
 extender' =
@@ -76,8 +79,8 @@ extender' =
 
 -- | Extender prism from text.
 --
--- >>> pack "abc" ^? extenders'
--- Just (Extender 'a')
+-- >>> pack "\721bc" ^? extenders'
+-- Just (Extender '\721')
 extenders' ::
   Prism' Text Extender
 extenders' =

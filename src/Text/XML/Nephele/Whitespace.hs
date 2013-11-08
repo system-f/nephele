@@ -19,6 +19,10 @@ import Data.List.NonEmpty(NonEmpty(..), toList)
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
+-- $setup
+-- >>> import Data.Text
+-- >>> import Control.Lens
+
 data Whitespace =
   Space
   | Tab
