@@ -12,7 +12,7 @@ module Text.XML.Nephele.Name(
 
 import Text.Parser.Char(CharParsing(..))
 import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<*>), (<$))
-import Data.List.NonEmpty(NonEmpty(..), toList)
+import Data.List.NonEmpty(NonEmpty(..))
 import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
 import Text.XML.Nephele.NameCharacter(NameCharacter, nameCharacters)
 import Text.XML.Nephele.Letter(Letter, letter)
@@ -79,6 +79,4 @@ some1 ::
   f a
   -> f (NonEmpty a)
 some1 x =
-  let m = toList <$> s <|> pure []
-      s = (:|) <$> x <*> m
-  in s
+  (:|) <$> x <*> some x

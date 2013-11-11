@@ -16,7 +16,7 @@ import Text.Parsec.Text()
 import Data.Text(Text, singleton)
 import Control.Applicative(Applicative(..), Alternative(..), (<$>))
 import Data.Foldable(asum)
-import Data.List.NonEmpty(NonEmpty(..), toList)
+import Data.List.NonEmpty(NonEmpty(..))
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
@@ -178,6 +178,4 @@ some1 ::
   f a
   -> f (NonEmpty a)
 some1 x =
-  let m = toList <$> s <|> pure []
-      s = (:|) <$> x <*> m
-  in s
+  (:|) <$> x <*> some x
