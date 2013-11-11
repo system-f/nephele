@@ -152,4 +152,4 @@ some1 ::
   f a
   -> f (NonEmpty a)
 some1 x =
-  (:|) <$> x <*> some x
+  (:|) <$> x <*> many x
