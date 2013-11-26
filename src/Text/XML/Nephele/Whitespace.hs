@@ -30,6 +30,12 @@ data Whitespace =
   | LineFeed
   deriving (Eq, Show)
 
+type Whitespaces =
+  [Whitespace]
+
+type Whitespaces1 =
+  NonEmpty Whitespace
+
 -- | Parse a white space character.
 --
 -- @(#x20', char '\x9', char '\xD', char '\xA)@.
@@ -72,7 +78,7 @@ whitespace =
 -- Right [Space,Space,Tab,Space,Space,LineFeed,Space]
 whitespaces ::
   CharParsing m =>
-  m [Whitespace]
+  m Whitespaces
 whitespaces =
   many whitespace
 
@@ -94,7 +100,7 @@ whitespaces =
 -- Right (Space :| [Space,Tab,Space,Space,LineFeed,Space])
 whitespaces1 ::
   CharParsing m =>
-  m (NonEmpty Whitespace)
+  m Whitespaces1
 whitespaces1 =
   some1 whitespace
 

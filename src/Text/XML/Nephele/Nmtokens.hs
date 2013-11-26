@@ -1,50 +1,64 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Text.XML.Nephele.Nmtokens(
+module Text.XML.Nephele.Nmtokens {-(
   Nmtokens
 , nmtokens
-) where
+)-} where
 
-import Text.Parser.Char(CharParsing(..), char)
-import Text.Parsec(parse)
+import Text.Parser.Char(CharParsing(..))
 import Text.Parsec.Text()
-import Data.Text(Text, singleton)
-import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
-import Data.List.NonEmpty(NonEmpty(..), toList)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
-import Text.XML.Nephele.NameCharacter(NameCharacter)
-import Text.XML.Nephele.Whitespace(Whitespace)
+import Control.Applicative(Applicative(..), Alternative(..), (<$>))
+import Data.List.NonEmpty(NonEmpty(..))
+import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, flip, id, error, undefined)
+import Text.XML.Nephele.NameCharacter(NameCharacter, nameCharacters1)
+import Text.XML.Nephele.Whitespace(Whitespace, whitespaces1)
 
 -- $setup
+-- >>> import Text.Parsec(parse)
 -- >>> import Data.Text
 -- >>> import Control.Lens
 
+type NmToken =
+  NonEmpty NameCharacter
+
 data Nmtokens =
-  Nmtokens (NonEmpty (NonEmpty NameCharacter)) [NonEmpty Whitespace]
+  Nmtokens (SepWith1 (NonEmpty Whitespace) (NonEmpty NameCharacter))
+  deriving (Eq, Show)
 
 -- | Parse nmtokens.
 --
 -- @((NameChar)+) (S ((NameChar)+))*@.
 --
--- >>> parse nmtokens "test" " "
--- Right Space
---
--- >>> parse nmtokens "test" "\t "
--- Right Tab
---
--- >>> parse nmtokens "test" "\n\t "
--- Right LineFeed
---
--- >>> parse nmtokens "test" "\r\n\t "
--- Right CarriageReturn
+-- >>> parse nmtokens "test" "abc  def \tgh"
+-- Right (Nmtokens (SepWith1 (LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'a')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'b')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'c'))]) [(Space :| [Space],LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'd')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'e')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'f'))]),(Space :| [Tab],LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'g')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'h'))])]))
 nmtokens ::
   CharParsing m =>
   m Nmtokens
 nmtokens =
-  nmtokens {-
-  Space <$ char '\x20'
-  <|> Tab <$ char '\x9'
-  <|> CarriageReturn <$ char '\xD'
-  <|> LineFeed <$ char '\xA'
-  -}
+  Nmtokens <$> sepWith1 nameCharacters1 whitespaces1
+
+data SepWith sep a =
+  EmptySepWith
+  | SepWith (SepWith1 sep a)
+  deriving (Eq, Show)
+
+sepWith ::
+  Alternative f =>
+  f a
+  -> f sep
+  -> f (SepWith sep a)
+sepWith p sep =
+  SepWith <$> sepWith1 p sep <|> pure EmptySepWith
+
+data SepWith1 sep a =
+  SepWith1 a [(sep, a)]
+  deriving (Eq, Show)
+
+sepWith1 ::
+  Alternative f =>
+  f a
+  -> f sep
+  -> f (SepWith1 sep a)
+sepWith1 p sep =
+  SepWith1 <$> p <*> many ((,) <$> sep <*> p)
