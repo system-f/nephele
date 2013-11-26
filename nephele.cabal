@@ -58,6 +58,7 @@ library
                       , Text.XML.Nephele.Name
                       , Text.XML.Nephele.NameCharacter
                       , Text.XML.Nephele.Nmtokens
+                      , Text.XML.Nephele.ParameterEntityReference
                       , Text.XML.Nephele.Whitespace
 
 test-suite doctests

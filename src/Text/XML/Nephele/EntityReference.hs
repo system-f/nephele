@@ -27,8 +27,8 @@ newtype EntityReference =
 --
 -- @'&' Name ';'@.
 --
--- >>> parse entityRef "test" "&abc;"
--- Right (EntityRef (Name (LetterNameFirst (BaseCharacterLetter (BaseCharacter 'a'))) [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'b')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'c'))]))
+-- >>> parse entityReference "test" "&abc;"
+-- Right (EntityReference (Name (LetterNameFirst (BaseCharacterLetter (BaseCharacter 'a'))) [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'b')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'c'))]))
 entityReference ::
   CharParsing m =>
   m EntityReference
