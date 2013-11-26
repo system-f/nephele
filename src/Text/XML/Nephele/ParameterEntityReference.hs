@@ -25,7 +25,7 @@ newtype ParameterEntityReference =
 
 -- | Parse a parameter entity reference.
 --
--- @'&' Name ';'@.
+-- @'%' Name ';'@.
 --
 -- >>> parse parameterEntityReference "test" "%abc;"
 -- Right (ParameterEntityReference (Name (LetterNameFirst (BaseCharacterLetter (BaseCharacter 'a'))) [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'b')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'c'))]))
