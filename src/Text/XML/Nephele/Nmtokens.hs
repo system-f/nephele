@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Text.XML.Nephele.Nmtokens {-(
+module Text.XML.Nephele.Nmtokens(
   Nmtokens
 , nmtokens
-)-} where
+) where
 
 import Text.Parser.Char(CharParsing(..))
 import Text.Parsec.Text()
@@ -18,9 +18,6 @@ import Text.XML.Nephele.Whitespace(Whitespace, whitespaces1)
 -- >>> import Text.Parsec(parse)
 -- >>> import Data.Text
 -- >>> import Control.Lens
-
-type NmToken =
-  NonEmpty NameCharacter
 
 data Nmtokens =
   Nmtokens (SepWith1 (NonEmpty Whitespace) (NonEmpty NameCharacter))
@@ -38,6 +35,9 @@ nmtokens ::
 nmtokens =
   Nmtokens <$> sepWith1 nameCharacters1 whitespaces1
 
+-- todo move to utility
+
+{-
 data SepWith sep a =
   EmptySepWith
   | SepWith (SepWith1 sep a)
@@ -50,6 +50,7 @@ sepWith ::
   -> f (SepWith sep a)
 sepWith p sep =
   SepWith <$> sepWith1 p sep <|> pure EmptySepWith
+-}
 
 data SepWith1 sep a =
   SepWith1 a [(sep, a)]
