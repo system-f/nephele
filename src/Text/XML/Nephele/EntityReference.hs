@@ -1,7 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Text.XML.Nephele.EntityRef where
+module Text.XML.Nephele.EntityReference(
+  EntityReference
+, entityReference
+, entityReferences
+, entityReferences1
+) where
 
 import Text.Parser.Char(CharParsing(..))
 import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<*>))
@@ -14,35 +19,35 @@ import Text.XML.Nephele.Name(Name, name)
 -- >>> import Data.Text
 -- >>> import Control.Lens
 
-newtype EntityRef =
-  EntityRef Name
+newtype EntityReference =
+  EntityReference Name
   deriving (Eq, Show)
 
--- | Parse an EntityRef.
+-- | Parse an entity reference.
 --
 -- @'&' Name ';'@.
 --
 -- >>> parse entityRef "test" "&abc;"
 -- Right (EntityRef (Name (LetterNameFirst (BaseCharacterLetter (BaseCharacter 'a'))) [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'b')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'c'))]))
-entityRef ::
+entityReference ::
   CharParsing m =>
-  m EntityRef
-entityRef =
-  EntityRef <$> (char '&' *> name <* char ';')
+  m EntityReference
+entityReference =
+  EntityReference <$> (char '&' *> name <* char ';')
 
 -- | Parse zero or many names.
-entityRefs ::
+entityReferences ::
   CharParsing m =>
-  m [EntityRef]
-entityRefs =
-  many entityRef
+  m [EntityReference]
+entityReferences =
+  many entityReference
 
 -- | Parse one or many names.
-entityRefs1 ::
+entityReferences1 ::
   CharParsing m =>
-  m (NonEmpty EntityRef)
-entityRefs1 =
-  some1 entityRef
+  m (NonEmpty EntityReference)
+entityReferences1 =
+  some1 entityReference
 
 -- todo move to utility
 some1 ::

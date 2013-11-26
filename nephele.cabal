@@ -51,7 +51,7 @@ library
                       , Text.XML.Nephele.CombiningCharacter
                       , Text.XML.Nephele.Comment
                       , Text.XML.Nephele.Digit
-                      , Text.XML.Nephele.EntityRef
+                      , Text.XML.Nephele.EntityReference
                       , Text.XML.Nephele.Extender
                       , Text.XML.Nephele.Ideographic
                       , Text.XML.Nephele.Letter
