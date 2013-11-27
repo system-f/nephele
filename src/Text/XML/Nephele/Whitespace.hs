@@ -4,7 +4,7 @@
 module Text.XML.Nephele.Whitespace(
   Whitespace
 , whitespace
-, whitespaces
+, Whitespaces1
 , whitespaces1
 , whitespace'
 , whitespaces'
@@ -30,12 +30,6 @@ data Whitespace =
   | LineFeed
   deriving (Eq, Show)
 
-type Whitespaces =
-  [Whitespace]
-
-type Whitespaces1 =
-  NonEmpty Whitespace
-
 -- | Parse a white space character.
 --
 -- @(#x20', char '\x9', char '\xD', char '\xA)@.
@@ -60,27 +54,10 @@ whitespace =
   <|> CarriageReturn <$ char '\xD'
   <|> LineFeed <$ char '\xA'
 
--- | Parse zero or many white space characters.
---
--- >>> parse whitespaces "test" ""
--- Right []
---
--- >>> parse whitespaces "test" " "
--- Right [Space]
---
--- >>> parse whitespaces "test" "    "
--- Right [Space,Space,Space,Space]
---
--- >>> parse whitespaces "test" "    abc"
--- Right [Space,Space,Space,Space]
---
--- >>> parse whitespaces "test" "  \t  \n "
--- Right [Space,Space,Tab,Space,Space,LineFeed,Space]
-whitespaces ::
-  CharParsing m =>
-  m Whitespaces
-whitespaces =
-  many whitespace
+
+newtype Whitespaces1 =
+  Whitespaces1 (NonEmpty Whitespace)
+  deriving (Eq, Show)
 
 -- | Parse one or many white space characters.
 --
@@ -88,21 +65,21 @@ whitespaces =
 -- True
 --
 -- >>> parse whitespaces1 "test" " "
--- Right (Space :| [])
+-- Right (Whitespaces1 (Space :| []))
 --
 -- >>> parse whitespaces1 "test" "    "
--- Right (Space :| [Space,Space,Space])
+-- Right (Whitespaces1 (Space :| [Space,Space,Space]))
 --
 -- >>> parse whitespaces1 "test" "    abc"
--- Right (Space :| [Space,Space,Space])
+-- Right (Whitespaces1 (Space :| [Space,Space,Space]))
 --
 -- >>> parse whitespaces1 "test" "  \t  \n "
--- Right (Space :| [Space,Tab,Space,Space,LineFeed,Space])
+-- Right (Whitespaces1 (Space :| [Space,Tab,Space,Space,LineFeed,Space]))
 whitespaces1 ::
   CharParsing m =>
   m Whitespaces1
 whitespaces1 =
-  some1 whitespace
+  Whitespaces1 <$> some1 whitespace
 
 -- | Whitespace prism from a char.
 --

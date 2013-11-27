@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Text.XML.Nephele.Nmtokens(
-  Nmtokens
-, nmtokens
+module Text.XML.Nephele.Names(
+  Names
+, names
 ) where
 
 import Text.Parser.Char(CharParsing(..))
@@ -18,21 +18,21 @@ import Text.XML.Nephele.Nmtoken(Nmtoken, nmtoken)
 -- >>> import Data.Text
 -- >>> import Control.Lens
 
-data Nmtokens =
-  Nmtokens (SepWith1 Whitespaces1 Nmtoken)
+data Names =
+  Names (SepWith1 Whitespaces1 Nmtoken)
   deriving (Eq, Show)
 
--- | Parse nmtokens.
+-- | Parse names.
 --
--- @((NameChar)+) (S ((NameChar)+))*@.
+-- @Name (S Name)*@.
 --
--- >>> parse nmtokens "test" "abc  def \tgh"
--- Right (Nmtokens (SepWith1 (Nmtoken (LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'a')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'b')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'c'))])) [(Whitespaces1 (Space :| [Space]),Nmtoken (LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'd')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'e')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'f'))])),(Whitespaces1 (Space :| [Tab]),Nmtoken (LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'g')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'h'))]))]))
-nmtokens ::
+-- >>> parse names "test" "abc  def \tgh"
+-- Right (Names (SepWith1 (Nmtoken (LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'a')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'b')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'c'))])) [(Whitespaces1 (Space :| [Space]),Nmtoken (LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'd')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'e')),LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'f'))])),(Whitespaces1 (Space :| [Tab]),Nmtoken (LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'g')) :| [LetterNameCharacter (BaseCharacterLetter (BaseCharacter 'h'))]))]))
+names ::
   CharParsing m =>
-  m Nmtokens
-nmtokens =
-  Nmtokens <$> sepWith1 nmtoken whitespaces1
+  m Names
+names =
+  Names <$> sepWith1 nmtoken whitespaces1
 
 -- todo move to utility
 

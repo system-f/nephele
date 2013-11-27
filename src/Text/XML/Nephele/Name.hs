@@ -6,13 +6,10 @@ module Text.XML.Nephele.Name(
 , nameFirst
 , Name
 , name
-, names
-, names1
 ) where
 
 import Text.Parser.Char(CharParsing(..))
 import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<*>), (<$))
-import Data.List.NonEmpty(NonEmpty(..))
 import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
 import Text.XML.Nephele.NameCharacter(NameCharacter, nameCharacters)
 import Text.XML.Nephele.Letter(Letter, letter)
@@ -58,25 +55,3 @@ name ::
   m Name
 name =
   Name <$> nameFirst <*> nameCharacters
-
--- | Parse zero or many names.
-names ::
-  CharParsing m =>
-  m [Name]
-names =
-  many name
-
--- | Parse one or many names.
-names1 ::
-  CharParsing m =>
-  m (NonEmpty Name)
-names1 =
-  some1 name
-
--- todo move to utility
-some1 ::
-  Alternative f =>
-  f a
-  -> f (NonEmpty a)
-some1 x =
-  (:|) <$> x <*> many x
