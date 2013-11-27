@@ -8,6 +8,11 @@ module Text.XML.Nephele.Character(
 , characters1
 , character'
 , characters'
+, ConstrainedCharacter
+, unconstrain
+, constrainCharacter
+, oneofCharacter
+, noneofCharacter
 ) where
 
 import Text.Parser.Char(CharParsing(..), oneOf, satisfyRange)
@@ -15,9 +20,10 @@ import Text.Parsec(parse)
 import Text.Parsec.Text()
 import Data.Text(Text, singleton)
 import Control.Applicative(Alternative(..), (<$>))
+import Data.Foldable(Foldable, elem, notElem)
 import Data.List.NonEmpty(NonEmpty(..), some1)
 import Control.Lens(Prism', prism', (^?), _Right)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
+import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool(..), String, error)
 
 -- $setup
 -- >>> import Data.Text
@@ -41,6 +47,42 @@ character =
           <|> satisfyRange '\xE000' '\xFFFD'
           <|> satisfyRange '\x10000' '\x10FFFF'
   in Character <$> c
+
+data ConstrainedCharacter =
+  UnconstrainedCharacter Char
+  | ConstrainedCharacter Character
+  deriving (Eq, Show)
+
+unconstrain ::
+  ConstrainedCharacter
+  -> Character
+unconstrain (UnconstrainedCharacter c) =
+  Character c
+unconstrain (ConstrainedCharacter c) =
+  c
+
+constrainCharacter ::
+  CharParsing m =>
+  (Char -> Bool)
+  -> m ConstrainedCharacter
+constrainCharacter p =
+  (\c'@(Character c) -> case p c of
+                          True -> UnconstrainedCharacter c
+                          False -> ConstrainedCharacter c') <$> character
+
+oneofCharacter ::
+  (CharParsing m, Foldable f) =>
+  f Char
+  -> m ConstrainedCharacter
+oneofCharacter s =
+  constrainCharacter (`elem` s)
+
+noneofCharacter ::
+  (CharParsing m, Foldable f) =>
+  f Char
+  -> m ConstrainedCharacter
+noneofCharacter s =
+  constrainCharacter (`notElem` s)
 
 -- | Parse zero or many characters.
 characters ::
