@@ -17,7 +17,7 @@ NameChar ::= Letter | Digit | '.' | '-' | '_' | ':' | CombiningChar | Extender
 Name ::= (Letter | '_' | ':') (NameChar)*
 
 
-
+(* Names *)
 Names ::= Name (S Name)*
 
 
