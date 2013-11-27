@@ -9,8 +9,8 @@ module Text.XML.Nephele.NameCharacter(
 ) where
 
 import Text.Parser.Char(CharParsing(..))
-import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
-import Data.List.NonEmpty(NonEmpty(..))
+import Control.Applicative(Alternative(..), (<$>), (<$))
+import Data.List.NonEmpty(NonEmpty(..), some1)
 import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
 import Text.XML.Nephele.Letter(Letter, letter)
 import Text.XML.Nephele.Digit(Digit, digit)
@@ -66,11 +66,3 @@ nameCharacters1 ::
   m (NonEmpty NameCharacter)
 nameCharacters1 =
   some1 nameCharacter
-
--- todo move to utility
-some1 ::
-  Alternative f =>
-  f a
-  -> f (NonEmpty a)
-some1 x =
-  (:|) <$> x <*> many x

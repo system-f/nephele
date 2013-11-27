@@ -10,8 +10,8 @@ module Text.XML.Nephele.Letter(
 ) where
 
 import Text.Parser.Char(CharParsing(..))
-import Control.Applicative(Applicative(..), Alternative(..), (<$>))
-import Data.List.NonEmpty(NonEmpty(..))
+import Control.Applicative(Alternative(..), (<$>))
+import Data.List.NonEmpty(NonEmpty(..), some1)
 import Control.Lens(Iso', iso)
 import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
 import Text.XML.Nephele.BaseCharacter(BaseCharacter, baseCharacter)
@@ -64,11 +64,3 @@ letter' =
                BaseCharacterLetter c -> Left c
                IdeographicLetter c -> Right c)
       (either BaseCharacterLetter IdeographicLetter)
-
--- todo move to utility
-some1 ::
-  Alternative f =>
-  f a
-  -> f (NonEmpty a)
-some1 x =
-  (:|) <$> x <*> many x

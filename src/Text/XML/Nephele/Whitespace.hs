@@ -14,8 +14,8 @@ import Text.Parser.Char(CharParsing(..), char)
 import Text.Parsec(parse)
 import Text.Parsec.Text()
 import Data.Text(Text, singleton)
-import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<$))
-import Data.List.NonEmpty(NonEmpty(..))
+import Control.Applicative(Alternative(..), (<$>), (<$))
+import Data.List.NonEmpty(NonEmpty(..), some1)
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
@@ -128,11 +128,3 @@ whitespaces' =
                          CarriageReturn -> '\xD'
                          LineFeed -> '\xA')
     ((^? _Right) . parse whitespace "character'")
-
--- todo move to utility
-some1 ::
-  Alternative f =>
-  f a
-  -> f (NonEmpty a)
-some1 x =
-  (:|) <$> x <*> many x

@@ -14,9 +14,9 @@ import Text.Parser.Char(CharParsing(..), satisfyRange)
 import Text.Parsec(parse)
 import Text.Parsec.Text()
 import Data.Text(Text, singleton)
-import Control.Applicative(Applicative(..), Alternative(..), (<$>))
+import Control.Applicative(Alternative(..), (<$>))
 import Data.Foldable(asum)
-import Data.List.NonEmpty(NonEmpty(..))
+import Data.List.NonEmpty(NonEmpty(..), some1)
 import Control.Lens(Prism', prism', (^?), _Right)
 import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
@@ -171,11 +171,3 @@ combiningCharacters' =
   prism'
     (\(CombiningCharacter c) -> singleton c)
     ((^? _Right) . parse combiningCharacter "combiningCharacter'")
-
--- todo move to utility
-some1 ::
-  Alternative f =>
-  f a
-  -> f (NonEmpty a)
-some1 x =
-  (:|) <$> x <*> many x

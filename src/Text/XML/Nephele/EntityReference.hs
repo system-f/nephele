@@ -9,8 +9,8 @@ module Text.XML.Nephele.EntityReference(
 ) where
 
 import Text.Parser.Char(CharParsing(..))
-import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<*>))
-import Data.List.NonEmpty(NonEmpty(..))
+import Control.Applicative(Applicative(..), Alternative(..), (<$>))
+import Data.List.NonEmpty(NonEmpty(..), some1)
 import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
 import Text.XML.Nephele.Name(Name, name)
 
@@ -48,11 +48,3 @@ entityReferences1 ::
   m (NonEmpty EntityReference)
 entityReferences1 =
   some1 entityReference
-
--- todo move to utility
-some1 ::
-  Alternative f =>
-  f a
-  -> f (NonEmpty a)
-some1 x =
-  (:|) <$> x <*> many x
