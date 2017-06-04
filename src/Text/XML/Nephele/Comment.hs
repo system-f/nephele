@@ -21,7 +21,6 @@ import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, Stri
 -- >>> import Text.Parsec
 -- >>> import Control.Lens
 -- >>> import Test.QuickCheck
--- >>> import Test.QuickCheck.Instances
 -- >>> import Data.Maybe
 -- >>> import Prelude
 -- >>> -- is this function required? http://lpaste.net/95317
