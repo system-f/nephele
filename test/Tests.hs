@@ -9,6 +9,7 @@ import Test.Tasty.HUnit(testCase, (@?=), assertBool)
 import Text.Parsec(parse)
 import Text.XML.Nephele.BaseCharacter
 import Text.XML.Nephele.Character
+import Text.XML.Nephele.CombiningCharacter
 
 main :: IO ()
 main =
@@ -36,4 +37,14 @@ testCharacter =
       testCase "character" ((parse character "test" "abc" ^? _Right) @?= 'a' ^? character')
     , testCase "character'" (assertBool "isJust" (isJust ('a' ^? character')))
     , testCase "characters'" (pack "abc" ^? characters' @?= 'a' ^? character')
+    ]
+
+testCombiningCharacter ::
+  TestTree
+testCombiningCharacter =
+  testGroup "Text.XML.Nephele.CombiningCharacter" $
+    [
+      testCase "combiningCharacter" ((parse combiningCharacter "test" "\784bc" ^? _Right) @?= '\784' ^? combiningCharacter')
+    , testCase "combiningCharacter'" (assertBool "isJust" (isJust ('\784' ^? combiningCharacter')))
+    , testCase "combiningCharacters'" (pack "\784bc" ^? combiningCharacters' @?= '\784' ^? combiningCharacter')
     ]
