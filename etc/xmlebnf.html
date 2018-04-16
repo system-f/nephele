@@ -1,0 +1,1707 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+    <title>EBNF for XML</title>
+    <style type="text/css">
+    body {
+        color: black; background: white;
+        margin: 2% 5% 5%;
+    }
+    table, td, p, h1, h2 { font-family: georgia, garamond, times, serif; }
+    h1 {
+        font: normal 2.2em georgia, garamond, times, serif;
+        text-align: center; 
+        color: maroon; 
+        background : url(http://www.jelks.nu/images/marble.gif) #fafafa;
+        border : thin outset White;
+        padding : .4em;
+    }
+    h2 { 
+        font: 110% verdana, arial, helvetica, sans-serif;
+        font-weight: normal;
+        color: navy; background: transparent; 
+    }
+    code { color: black; background: transparent; }
+    strong {
+        color: navy; background: transparent;
+        font-weight: bold;
+        font-style: italic;
+    }
+    .intro { margin-right: 5%;  }
+    .maintable {
+        padding: 5px;
+        margin-bottom: 6px;
+        width: 100%;
+    }
+    .left { text-class: left; }
+    .right { text-class: right; }
+    .center { text-class: center; }
+    .top { vertical-align: top; }
+    hr { border: thin white ridge; margin-right: 5%; }
+    </style>
+    <link rel="shortcut icon" href="http://www.jelks.nu/favicon.ico">
+  </head>
+
+  <body>
+    <h1>EBNF for XML 1.0</h1>
+
+    <h2>Just the EBNF</h2>
+
+    <p class="intro">Here is the <a href="http://www.w3.org/TR/REC-xml">
+    XML 1.0 Recommendation</a>'s EBNF, without the prose.</p>
+
+    <p class="intro">(If even <em>
+    this</em> is too much, you can get <a href="http://jelks.nu/XML/xmlebnf.txt">just the EBNF
+    itself in text format</a>. On the other hand, if you are looking for a more English-like description
+    than the Recommendation offers, take a look at Tim Bray's <a href="http://www.xml.com/axml/testaxml.htm">Annotated XML
+    Specification</a>.)</p>
+
+    <p class="intro">See also <a href="http://www.garshol.priv.no/download/text/bnf.html">BNF and EBNF- What are they and how do they
+    work</a> by Lars Marius Garshol.</p>
+
+    <p><img alt=" the EBNF " src="EBNF%20for%20XML_files/owl.gif" width="582" height="27"></p>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Document</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-document" name="NT-document">
+              </a>[1]&nbsp;</td>
+
+              <td class="right"><code>document</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-prolog">
+              prolog</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-element">element</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Misc">Misc</a>*</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Character Range</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-Char" name="NT-Char">
+              </a>[2]&nbsp;</td>
+
+              <td class="right"><code>Char</code></td>
+
+              <td class="center"><code>::=<br>
+              </code></td>
+
+              <td class="left"><code>#x9 |&nbsp;#xA |&nbsp;#xD
+              |&nbsp;[#x20-#xD7FF] |&nbsp;[#xE000-#xFFFD]
+              |&nbsp;[#x10000-#x10FFFF]</code></td>
+
+              <td class="right"><code>/*</code></td>
+
+              <td class="left"><code>any Unicode character, excluding the
+              surrogate blocks, FFFE, and FFFF. */</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>White Space</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-S" name="NT-S"></a>[3]&nbsp;</td>
+
+              <td class="right"><code>S</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>(#x20 |&nbsp;#x9 |&nbsp;#xD
+              |&nbsp;#xA)+</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Names and Tokens</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-NameChar" name="NT-NameChar">
+              </a>[4]&nbsp;</td>
+
+              <td class="right"><code>NameChar</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Letter">
+              Letter</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Digit">Digit</a>
+              |&nbsp;'.' |&nbsp;'-' |&nbsp;'_' |&nbsp;':' |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-CombiningChar">CombiningChar</a>
+              |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Extender">
+              Extender</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Name" name="NT-Name">
+              </a>[5]&nbsp;</td>
+
+              <td class="right"><code>Name</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>(<a href="http://jelks.nu/XML/xmlebnf.html#NT-Letter">Letter</a> |&nbsp;'_'
+              |&nbsp;':') (<a href="http://jelks.nu/XML/xmlebnf.html#NT-NameChar">NameChar</a>)*</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Names" name="NT-Names">
+              </a>[6]&nbsp;</td>
+
+              <td class="right"><code>Names</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">
+              Name</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a>)*</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Nmtoken" name="NT-Nmtoken">
+              </a>[7]&nbsp;</td>
+
+              <td class="right"><code>Nmtoken</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>(<a href="http://jelks.nu/XML/xmlebnf.html#NT-NameChar">NameChar</a>)+</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Nmtokens" name="NT-Nmtokens">
+              </a>[8]&nbsp;</td>
+
+              <td class="right"><code>Nmtokens</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Nmtoken">
+              Nmtoken</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Nmtoken">Nmtoken</a>)*</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Literals</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-EntityValue" name="NT-EntityValue"></a>[9]&nbsp;</td>
+
+              <td class="right"><code>EntityValue</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'"' ([^%&amp;"] |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PEReference">PEReference</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Reference">Reference</a>)* '"' |&nbsp;
+              "'" ([^%&amp;'] |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PEReference">
+              PEReference</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Reference">
+              Reference</a>)* "'"</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-AttValue" name="NT-AttValue">
+              </a>[10]&nbsp;</td>
+
+              <td class="right"><code>AttValue</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'"' ([^&lt;&amp;"] |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Reference">Reference</a>)* '"' |&nbsp;
+              "'" ([^&lt;&amp;'] |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Reference">Reference</a>)*
+              "'"</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-SystemLiteral" name="NT-SystemLiteral"></a>[11]&nbsp;</td>
+
+              <td class="right"><code>SystemLiteral</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>('"' [^"]* '"') |&nbsp;("'" [^']*
+              "'")</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-PubidLiteral" name="NT-PubidLiteral"></a>[12]&nbsp;</td>
+
+              <td class="right"><code>PubidLiteral</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'"' <a href="http://jelks.nu/XML/xmlebnf.html#NT-PubidChar">PubidChar</a>* '"'
+              |&nbsp;"'" (<a href="http://jelks.nu/XML/xmlebnf.html#NT-PubidChar">PubidChar</a>
+              - "'")* "'"</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-PubidChar" name="NT-PubidChar">
+              </a>[13]&nbsp;</td>
+
+              <td class="right"><code>PubidChar</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>#x20 |&nbsp;#xD |&nbsp;#xA
+              |&nbsp;[a-zA-Z0-9] |&nbsp;[-'()+,./:=?;!*#@$_%]</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Character Data</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-CharData" name="NT-CharData">
+              </a>[14]&nbsp;</td>
+
+              <td class="right"><code>CharData</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>[^&lt;&amp;]* - ([^&lt;&amp;]*
+              ']]&gt;' [^&lt;&amp;]*)</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Comments</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-Comment" name="NT-Comment">
+              </a>[15]&nbsp;</td>
+
+              <td class="right"><code>Comment</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;!--' ((<a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a> - '-') |&nbsp;('-' (<a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a> - '-')))*
+              '--&gt;'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Processing Instructions</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-PI" name="NT-PI">
+              </a>[16]&nbsp;</td>
+
+              <td class="right"><code>PI</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;?' <a href="http://jelks.nu/XML/xmlebnf.html#NT-PITarget">PITarget</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a>* - (<a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a>* '?&gt;' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a>*)))? '?&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-PITarget" name="NT-PITarget">
+              </a>[17]&nbsp;</td>
+
+              <td class="right"><code>PITarget</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">
+              Name</a> - (('X' |&nbsp;'x') ('M' |&nbsp;'m') ('L'
+              |&nbsp;'l'))</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>CDATA Sections</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-CDSect" name="NT-CDSect">
+              </a>[18]&nbsp;</td>
+
+              <td class="right"><code>CDSect</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-CDStart">
+              CDStart</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-CData">CData</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-CDEnd">CDEnd</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-CDStart" name="NT-CDStart">
+              </a>[19]&nbsp;</td>
+
+              <td class="right"><code>CDStart</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;![CDATA['</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-CData" name="NT-CData">
+              </a>[20]&nbsp;</td>
+
+              <td class="right"><code>CData</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>(<a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a>* - (<a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a>* ']]&gt;' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a>*))</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-CDEnd" name="NT-CDEnd">
+              </a>[21]&nbsp;</td>
+
+              <td class="right"><code>CDEnd</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>']]&gt;'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Prolog</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-prolog" name="NT-prolog">
+              </a>[22]&nbsp;</td>
+
+              <td class="right"><code>prolog</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-XMLDecl">
+              XMLDecl</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-Misc">Misc</a>* (<a href="http://jelks.nu/XML/xmlebnf.html#NT-doctypedecl">doctypedecl</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Misc">Misc</a>*)?</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-XMLDecl" name="NT-XMLDecl">
+              </a>[23]&nbsp;</td>
+
+              <td class="right"><code>XMLDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;?xml' <a href="http://jelks.nu/XML/xmlebnf.html#NT-VersionInfo">VersionInfo</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-EncodingDecl">EncodingDecl</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-SDDecl">SDDecl</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '?&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-VersionInfo" name="NT-VersionInfo"></a>[24]&nbsp;</td>
+
+              <td class="right"><code>VersionInfo</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>
+              'version' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Eq">Eq</a> (' <a href="http://jelks.nu/XML/xmlebnf.html#NT-VersionNum">VersionNum</a> ' |&nbsp;"
+              <a href="http://jelks.nu/XML/xmlebnf.html#NT-VersionNum">VersionNum</a>
+              ")</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Eq" name="NT-Eq">
+              </a>[25]&nbsp;</td>
+
+              <td class="right"><code>Eq</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '='
+              <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>?</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-VersionNum" name="NT-VersionNum">
+              </a>[26]&nbsp;</td>
+
+              <td class="right"><code>VersionNum</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>([a-zA-Z0-9_.:]
+              |&nbsp;'-')+</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Misc" name="NT-Misc">
+              </a>[27]&nbsp;</td>
+
+              <td class="right"><code>Misc</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Comment">
+              Comment</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PI">PI</a>
+              |&nbsp; <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Document Type Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-doctypedecl" name="NT-doctypedecl"></a>[28]&nbsp;</td>
+
+              <td class="right"><code>doctypedecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;!DOCTYPE' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-ExternalID">ExternalID</a>)? <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ('[' (<a href="http://jelks.nu/XML/xmlebnf.html#NT-markupdecl">markupdecl</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PEReference">PEReference</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>)* ']' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>?)? '&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-markupdecl" name="NT-markupdecl">
+              </a>[29]&nbsp;</td>
+
+              <td class="right"><code>markupdecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-elementdecl">
+              elementdecl</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-AttlistDecl">
+              AttlistDecl</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-EntityDecl">
+              EntityDecl</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-NotationDecl">
+              NotationDecl</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PI">PI</a>
+              |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Comment">
+              Comment</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>External Subset</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-extSubset" name="NT-extSubset">
+              </a>[30]&nbsp;</td>
+
+              <td class="right"><code>extSubset</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-TextDecl">
+              TextDecl</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-extSubsetDecl">
+              extSubsetDecl</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-extSubsetDecl" name="NT-extSubsetDecl"></a>[31]&nbsp;</td>
+
+              <td class="right"><code>extSubsetDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>( <a href="http://jelks.nu/XML/xmlebnf.html#NT-markupdecl">markupdecl</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-conditionalSect">conditionalSect</a>
+              |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PEReference">PEReference</a>
+              |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> )*</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Standalone Document Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-SDDecl" name="NT-SDDecl">
+              </a>[32]&nbsp;</td>
+
+              <td class="right"><code>SDDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>
+              'standalone' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Eq">Eq</a> (("'" ('yes'
+              |&nbsp;'no') "'") |&nbsp;('"' ('yes' |&nbsp;'no')
+              '"'))</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Language Identification</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-LanguageID" name="NT-LanguageID">
+              </a>[33]&nbsp;</td>
+
+              <td class="right"><code>LanguageID</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Langcode">
+              Langcode</a> ('-' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Subcode">
+              Subcode</a>)*</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Langcode" name="NT-Langcode">
+              </a>[34]&nbsp;</td>
+
+              <td class="right"><code>Langcode</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-ISO639Code">
+              ISO639Code</a> |&nbsp; <a href="http://jelks.nu/XML/xmlebnf.html#NT-IanaCode">
+              IanaCode</a> |&nbsp; <a href="http://jelks.nu/XML/xmlebnf.html#NT-UserCode">
+              UserCode</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-ISO639Code" name="NT-ISO639Code">
+              </a>[35]&nbsp;</td>
+
+              <td class="right"><code>ISO639Code</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>([a-z] |&nbsp;[A-Z]) ([a-z]
+              |&nbsp;[A-Z])</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-IanaCode" name="NT-IanaCode">
+              </a>[36]&nbsp;</td>
+
+              <td class="right"><code>IanaCode</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>('i' |&nbsp;'I') '-' ([a-z]
+              |&nbsp;[A-Z])+</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-UserCode" name="NT-UserCode">
+              </a>[37]&nbsp;</td>
+
+              <td class="right"><code>UserCode</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>('x' |&nbsp;'X') '-' ([a-z]
+              |&nbsp;[A-Z])+</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Subcode" name="NT-Subcode">
+              </a>[38]&nbsp;</td>
+
+              <td class="right"><code>Subcode</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>([a-z] |&nbsp;[A-Z])+</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Element</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-element" name="NT-element">
+              </a>[39]&nbsp;</td>
+
+              <td class="right"><code>element</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-EmptyElemTag">EmptyElemTag</a>
+              |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-STag">STag</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-content">content</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-ETag">ETag</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Start-tag</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-STag" name="NT-STag">
+              </a>[40]&nbsp;</td>
+
+              <td class="right"><code>STag</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">
+              Name</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Attribute">Attribute</a>)* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Attribute" name="NT-Attribute">
+              </a>[41]&nbsp;</td>
+
+              <td class="right"><code>Attribute</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">
+              Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Eq">Eq</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-AttValue">AttValue</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>End-tag</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-ETag" name="NT-ETag">
+              </a>[42]&nbsp;</td>
+
+              <td class="right"><code>ETag</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;/' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '&gt;'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Content of Elements</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-content" name="NT-content">
+              </a>[43]&nbsp;</td>
+
+              <td class="right"><code>content</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>(<a href="http://jelks.nu/XML/xmlebnf.html#NT-element">element</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-CharData">CharData</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Reference">Reference</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-CDSect">CDSect</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PI">PI</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Comment">Comment</a>)*</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Tags for Empty Elements</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-EmptyElemTag" name="NT-EmptyElemTag"></a>[44]&nbsp;</td>
+
+              <td class="right"><code>EmptyElemTag</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">
+              Name</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Attribute">Attribute</a>)* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '/&gt;'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Element Type Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-elementdecl" name="NT-elementdecl"></a>[45]&nbsp;</td>
+
+              <td class="right"><code>elementdecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;!ELEMENT' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-contentspec">contentspec</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-contentspec" name="NT-contentspec"></a>[46]&nbsp;</td>
+
+              <td class="right"><code>contentspec</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'EMPTY' |&nbsp;'ANY' |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Mixed">Mixed</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-children">children</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Element-content Models</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-children" name="NT-children">
+              </a>[47]&nbsp;</td>
+
+              <td class="right"><code>children</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>(<a href="http://jelks.nu/XML/xmlebnf.html#NT-choice">choice</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-seq">seq</a>) ('?' |&nbsp;'*'
+              |&nbsp;'+')?</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-cp" name="NT-cp">
+              </a>[48]&nbsp;</td>
+
+              <td class="right"><code>cp</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>(<a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-choice">choice</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-seq">seq</a>) ('?' |&nbsp;'*'
+              |&nbsp;'+')?</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-choice" name="NT-choice">
+              </a>[49]&nbsp;</td>
+
+              <td class="right"><code>choice</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'(' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>?
+              cp ( <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '|' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-cp">
+              cp</a> )* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ')'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-seq" name="NT-seq">
+              </a>[50]&nbsp;</td>
+
+              <td class="right"><code>seq</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'(' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>?
+              cp ( <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ',' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-cp">
+              cp</a> )* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ')'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Mixed-content Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-Mixed" name="NT-Mixed">
+              </a>[51]&nbsp;</td>
+
+              <td class="right"><code>Mixed</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'(' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>?
+              '#PCDATA' (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '|' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a>)* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ')*' |&nbsp;'(' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '#PCDATA' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ')'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Attribute-list Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-AttlistDecl" name="NT-AttlistDecl"></a>[52]&nbsp;</td>
+
+              <td class="right"><code>AttlistDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;!ATTLIST' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-AttDef">AttDef</a>* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-AttDef" name="NT-AttDef">
+              </a>[53]&nbsp;</td>
+
+              <td class="right"><code>AttDef</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-AttType">AttType</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-DefaultDecl">
+              DefaultDecl</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Attribute Types</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-AttType" name="NT-AttType">
+              </a>[54]&nbsp;</td>
+
+              <td class="right"><code>AttType</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-StringType">
+              StringType</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-TokenizedType">TokenizedType</a>
+              |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-EnumeratedType">
+              EnumeratedType</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-StringType" name="NT-StringType">
+              </a>[55]&nbsp;</td>
+
+              <td class="right"><code>StringType</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'CDATA'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-TokenizedType" name="NT-TokenizedType"></a>[56]&nbsp;</td>
+
+              <td class="right"><code>TokenizedType</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'ID' |&nbsp;'IDREF' |&nbsp;'IDREFS'
+              |&nbsp;'ENTITY' |&nbsp;'ENTITIES' |&nbsp;'NMTOKEN'
+              |&nbsp;'NMTOKENS'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Enumerated Attribute Types</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-EnumeratedType" name="NT-EnumeratedType"></a>[57]&nbsp;</td>
+
+              <td class="right"><code>EnumeratedType</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-NotationType">NotationType</a>
+              |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Enumeration">
+              Enumeration</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-NotationType" name="NT-NotationType"></a>[58]&nbsp;</td>
+
+              <td class="right"><code>NotationType</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'NOTATION' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> '(' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '|' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a>)* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ')'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Enumeration" name="NT-Enumeration"></a>[59]&nbsp;</td>
+
+              <td class="right"><code>Enumeration</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'(' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>?
+              <a href="http://jelks.nu/XML/xmlebnf.html#NT-Nmtoken">Nmtoken</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '|' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-Nmtoken">Nmtoken</a>)* <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? ')'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Attribute Defaults</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-DefaultDecl" name="NT-DefaultDecl"></a>[60]&nbsp;</td>
+
+              <td class="right"><code>DefaultDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'#REQUIRED' |&nbsp;'#IMPLIED'
+              |&nbsp;(('#FIXED' S)? <a href="http://jelks.nu/XML/xmlebnf.html#NT-AttValue">
+              AttValue</a>)</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Conditional Section</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-conditionalSect" name="NT-conditionalSect"></a>[61]&nbsp;</td>
+
+              <td class="right"><code>conditionalSect</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-includeSect">
+              includeSect</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-ignoreSect">
+              ignoreSect</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-includeSect" name="NT-includeSect"></a>[62]&nbsp;</td>
+
+              <td class="right"><code>includeSect</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;![' S? 'INCLUDE' S? '[' <a href="http://jelks.nu/XML/xmlebnf.html#NT-extSubsetDecl">extSubsetDecl</a>
+              ']]&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-ignoreSect" name="NT-ignoreSect">
+              </a>[63]&nbsp;</td>
+
+              <td class="right"><code>ignoreSect</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;![' S? 'IGNORE' S? '[' <a href="http://jelks.nu/XML/xmlebnf.html#NT-ignoreSectContents">
+              ignoreSectContents</a>* ']]&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-ignoreSectContents" name="NT-ignoreSectContents"></a>[64]&nbsp;</td>
+
+              <td class="right"><code>ignoreSectContents</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Ignore">
+              Ignore</a> ('&lt;![' <a href="http://jelks.nu/XML/xmlebnf.html#NT-ignoreSectContents">
+              ignoreSectContents</a> ']]&gt;' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Ignore">Ignore</a>)*</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Ignore" name="NT-Ignore">
+              </a>[65]&nbsp;</td>
+
+              <td class="right"><code>Ignore</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">
+              Char</a>* - (<a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">Char</a>*
+              ('&lt;![' |&nbsp;']]&gt;') <a href="http://jelks.nu/XML/xmlebnf.html#NT-Char">
+              Char</a>*)</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Character Reference</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-CharRef" name="NT-CharRef">
+              </a>[66]&nbsp;</td>
+
+              <td class="right"><code>CharRef</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&amp;#' [0-9]+ ';' |&nbsp;'&amp;#x'
+              [0-9a-fA-F]+ ';'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Entity Reference</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-Reference" name="NT-Reference">
+              </a>[67]&nbsp;</td>
+
+              <td class="right"><code>Reference</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-EntityRef">
+              EntityRef</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-CharRef">
+              CharRef</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-EntityRef" name="NT-EntityRef">
+              </a>[68]&nbsp;</td>
+
+              <td class="right"><code>EntityRef</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&amp;' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> ';'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-PEReference" name="NT-PEReference"></a>[69]&nbsp;</td>
+
+              <td class="right"><code>PEReference</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'%' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">
+              Name</a> ';'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Entity Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-EntityDecl" name="NT-EntityDecl">
+              </a>[70]&nbsp;</td>
+
+              <td class="right"><code>EntityDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-GEDecl">
+              GEDecl</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-PEDecl">
+              PEDecl</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-GEDecl" name="NT-GEDecl">
+              </a>[71]&nbsp;</td>
+
+              <td class="right"><code>GEDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;!ENTITY' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-EntityDef">EntityDef</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-PEDecl" name="NT-PEDecl">
+              </a>[72]&nbsp;</td>
+
+              <td class="right"><code>PEDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;!ENTITY' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> '%' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-PEDef">PEDef</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-EntityDef" name="NT-EntityDef">
+              </a>[73]&nbsp;</td>
+
+              <td class="right"><code>EntityDef</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-EntityValue">
+              EntityValue</a> |&nbsp;(<a href="http://jelks.nu/XML/xmlebnf.html#NT-ExternalID">ExternalID</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-NDataDecl">NDataDecl</a>?)</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-PEDef" name="NT-PEDef">
+              </a>[74]&nbsp;</td>
+
+              <td class="right"><code>PEDef</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-EntityValue">
+              EntityValue</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-ExternalID">
+              ExternalID</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>External Entity Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-ExternalID" name="NT-ExternalID">
+              </a>[75]&nbsp;</td>
+
+              <td class="right"><code>ExternalID</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'SYSTEM' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">
+              S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-SystemLiteral">
+              SystemLiteral</a> |&nbsp;'PUBLIC' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-PubidLiteral">PubidLiteral</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-SystemLiteral">
+              SystemLiteral</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-NDataDecl" name="NT-NDataDecl">
+              </a>[76]&nbsp;</td>
+
+              <td class="right"><code>NDataDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>
+              'NDATA' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Text Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-TextDecl" name="NT-TextDecl">
+              </a>[77]&nbsp;</td>
+
+              <td class="right"><code>TextDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;?xml' <a href="http://jelks.nu/XML/xmlebnf.html#NT-VersionInfo">VersionInfo</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-EncodingDecl">EncodingDecl</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '?&gt;'</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Well-Formed External Parsed Entity</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-extParsedEnt" name="NT-extParsedEnt"></a>[78]&nbsp;</td>
+
+              <td class="right"><code>extParsedEnt</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-TextDecl">
+              TextDecl</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-content">
+              content</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-extPE" name="NT-extPE">
+              </a>[79]&nbsp;</td>
+
+              <td class="right"><code>extPE</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-TextDecl">
+              TextDecl</a>? <a href="http://jelks.nu/XML/xmlebnf.html#NT-extSubsetDecl">
+              extSubsetDecl</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Encoding Declaration</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-EncodingDecl" name="NT-EncodingDecl"></a>[80]&nbsp;</td>
+
+              <td class="right"><code>EncodingDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> 'encoding' <a href="http://jelks.nu/XML/xmlebnf.html#NT-Eq">Eq</a> ('"' <a href="http://jelks.nu/XML/xmlebnf.html#NT-EncName">EncName</a>&nbsp; '"' |&nbsp;
+              "'" <a href="http://jelks.nu/XML/xmlebnf.html#NT-EncName">EncName</a> "'"
+              )</code></td>
+
+              <td class="left">
+              </td>
+
+              <td class="left">
+              </td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-EncName" name="NT-EncName">
+              </a>[81]&nbsp;</td>
+
+              <td class="right"><code>EncName</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>[A-Za-z] ([A-Za-z0-9._]
+              |&nbsp;'-')*</code></td>
+
+              <td class="left"><code>/*</code></td>
+
+              <td class="left"><code>Encoding name contains only Latin
+              characters */</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Notation Declarations</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-NotationDecl" name="NT-NotationDecl"></a>[82]&nbsp;</td>
+
+              <td class="right"><code>NotationDecl</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'&lt;!NOTATION' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-Name">Name</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a> (<a href="http://jelks.nu/XML/xmlebnf.html#NT-ExternalID">ExternalID</a> |&nbsp; <a href="http://jelks.nu/XML/xmlebnf.html#NT-PublicID">PublicID</a>) <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">S</a>? '&gt;'</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-PublicID" name="NT-PublicID">
+              </a>[83]&nbsp;</td>
+
+              <td class="right"><code>PublicID</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>'PUBLIC' <a href="http://jelks.nu/XML/xmlebnf.html#NT-S">
+              S</a> <a href="http://jelks.nu/XML/xmlebnf.html#NT-PubidLiteral">
+              PubidLiteral</a></code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+
+    <table class="maintable">
+      <tbody><tr class="left">
+        <td><strong>Characters</strong></td>
+      </tr>
+
+      <tr>
+        <td>
+          <table class="innertable">
+            <tbody><tr valign="top">
+              <td class="right"><a id="NT-Letter" name="NT-Letter">
+              </a>[84]&nbsp;</td>
+
+              <td class="right"><code>Letter</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code><a href="http://jelks.nu/XML/xmlebnf.html#NT-BaseChar">
+              BaseChar</a> |&nbsp;<a href="http://jelks.nu/XML/xmlebnf.html#NT-Ideographic">
+              Ideographic</a></code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-BaseChar" name="NT-BaseChar">
+              </a>[85]&nbsp;</td>
+
+              <td class="right"><code>BaseChar</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>[#x0041-#x005A] |&nbsp;[#x0061-#x007A]
+              |&nbsp;[#x00C0-#x00D6] |&nbsp;[#x00D8-#x00F6]
+              |&nbsp;[#x00F8-#x00FF] |&nbsp;[#x0100-#x0131]
+              |&nbsp;[#x0134-#x013E] |&nbsp;[#x0141-#x0148]
+              |&nbsp;[#x014A-#x017E] |&nbsp;[#x0180-#x01C3]
+              |&nbsp;[#x01CD-#x01F0] |&nbsp;[#x01F4-#x01F5]
+              |&nbsp;[#x01FA-#x0217] |&nbsp;[#x0250-#x02A8]
+              |&nbsp;[#x02BB-#x02C1] |&nbsp;#x0386 |&nbsp;[#x0388-#x038A]
+              |&nbsp;#x038C |&nbsp;[#x038E-#x03A1] |&nbsp;[#x03A3-#x03CE]
+              |&nbsp;[#x03D0-#x03D6] |&nbsp;#x03DA |&nbsp;#x03DC
+              |&nbsp;#x03DE |&nbsp;#x03E0 |&nbsp;[#x03E2-#x03F3]
+              |&nbsp;[#x0401-#x040C] |&nbsp;[#x040E-#x044F]
+              |&nbsp;[#x0451-#x045C] |&nbsp;[#x045E-#x0481]
+              |&nbsp;[#x0490-#x04C4] |&nbsp;[#x04C7-#x04C8]
+              |&nbsp;[#x04CB-#x04CC] |&nbsp;[#x04D0-#x04EB]
+              |&nbsp;[#x04EE-#x04F5] |&nbsp;[#x04F8-#x04F9]
+              |&nbsp;[#x0531-#x0556] |&nbsp;#x0559 |&nbsp;[#x0561-#x0586]
+              |&nbsp;[#x05D0-#x05EA] |&nbsp;[#x05F0-#x05F2]
+              |&nbsp;[#x0621-#x063A] |&nbsp;[#x0641-#x064A]
+              |&nbsp;[#x0671-#x06B7] |&nbsp;[#x06BA-#x06BE]
+              |&nbsp;[#x06C0-#x06CE] |&nbsp;[#x06D0-#x06D3] |&nbsp;#x06D5
+              |&nbsp;[#x06E5-#x06E6] |&nbsp;[#x0905-#x0939] |&nbsp;#x093D
+              |&nbsp;[#x0958-#x0961] |&nbsp;[#x0985-#x098C]
+              |&nbsp;[#x098F-#x0990] |&nbsp;[#x0993-#x09A8]
+              |&nbsp;[#x09AA-#x09B0] |&nbsp;#x09B2 |&nbsp;[#x09B6-#x09B9]
+              |&nbsp;[#x09DC-#x09DD] |&nbsp;[#x09DF-#x09E1]
+              |&nbsp;[#x09F0-#x09F1] |&nbsp;[#x0A05-#x0A0A]
+              |&nbsp;[#x0A0F-#x0A10] |&nbsp;[#x0A13-#x0A28]
+              |&nbsp;[#x0A2A-#x0A30] |&nbsp;[#x0A32-#x0A33]
+              |&nbsp;[#x0A35-#x0A36] |&nbsp;[#x0A38-#x0A39]
+              |&nbsp;[#x0A59-#x0A5C] |&nbsp;#x0A5E |&nbsp;[#x0A72-#x0A74]
+              |&nbsp;[#x0A85-#x0A8B] |&nbsp;#x0A8D |&nbsp;[#x0A8F-#x0A91]
+              |&nbsp;[#x0A93-#x0AA8] |&nbsp;[#x0AAA-#x0AB0]
+              |&nbsp;[#x0AB2-#x0AB3] |&nbsp;[#x0AB5-#x0AB9] |&nbsp;#x0ABD
+              |&nbsp;#x0AE0 |&nbsp;[#x0B05-#x0B0C] |&nbsp;[#x0B0F-#x0B10]
+              |&nbsp;[#x0B13-#x0B28] |&nbsp;[#x0B2A-#x0B30]
+              |&nbsp;[#x0B32-#x0B33] |&nbsp;[#x0B36-#x0B39] |&nbsp;#x0B3D
+              |&nbsp;[#x0B5C-#x0B5D] |&nbsp;[#x0B5F-#x0B61]
+              |&nbsp;[#x0B85-#x0B8A] |&nbsp;[#x0B8E-#x0B90]
+              |&nbsp;[#x0B92-#x0B95] |&nbsp;[#x0B99-#x0B9A] |&nbsp;#x0B9C
+              |&nbsp;[#x0B9E-#x0B9F] |&nbsp;[#x0BA3-#x0BA4]
+              |&nbsp;[#x0BA8-#x0BAA] |&nbsp;[#x0BAE-#x0BB5]
+              |&nbsp;[#x0BB7-#x0BB9] |&nbsp;[#x0C05-#x0C0C]
+              |&nbsp;[#x0C0E-#x0C10] |&nbsp;[#x0C12-#x0C28]
+              |&nbsp;[#x0C2A-#x0C33] |&nbsp;[#x0C35-#x0C39]
+              |&nbsp;[#x0C60-#x0C61] |&nbsp;[#x0C85-#x0C8C]
+              |&nbsp;[#x0C8E-#x0C90] |&nbsp;[#x0C92-#x0CA8]
+              |&nbsp;[#x0CAA-#x0CB3] |&nbsp;[#x0CB5-#x0CB9] |&nbsp;#x0CDE
+              |&nbsp;[#x0CE0-#x0CE1] |&nbsp;[#x0D05-#x0D0C]
+              |&nbsp;[#x0D0E-#x0D10] |&nbsp;[#x0D12-#x0D28]
+              |&nbsp;[#x0D2A-#x0D39] |&nbsp;[#x0D60-#x0D61]
+              |&nbsp;[#x0E01-#x0E2E] |&nbsp;#x0E30 |&nbsp;[#x0E32-#x0E33]
+              |&nbsp;[#x0E40-#x0E45] |&nbsp;[#x0E81-#x0E82] |&nbsp;#x0E84
+              |&nbsp;[#x0E87-#x0E88] |&nbsp;#x0E8A |&nbsp;#x0E8D
+              |&nbsp;[#x0E94-#x0E97] |&nbsp;[#x0E99-#x0E9F]
+              |&nbsp;[#x0EA1-#x0EA3] |&nbsp;#x0EA5 |&nbsp;#x0EA7
+              |&nbsp;[#x0EAA-#x0EAB] |&nbsp;[#x0EAD-#x0EAE] |&nbsp;#x0EB0
+              |&nbsp;[#x0EB2-#x0EB3] |&nbsp;#x0EBD |&nbsp;[#x0EC0-#x0EC4]
+              |&nbsp;[#x0F40-#x0F47] |&nbsp;[#x0F49-#x0F69]
+              |&nbsp;[#x10A0-#x10C5] |&nbsp;[#x10D0-#x10F6] |&nbsp;#x1100
+              |&nbsp;[#x1102-#x1103] |&nbsp;[#x1105-#x1107] |&nbsp;#x1109
+              |&nbsp;[#x110B-#x110C] |&nbsp;[#x110E-#x1112] |&nbsp;#x113C
+              |&nbsp;#x113E |&nbsp;#x1140 |&nbsp;#x114C |&nbsp;#x114E
+              |&nbsp;#x1150 |&nbsp;[#x1154-#x1155] |&nbsp;#x1159
+              |&nbsp;[#x115F-#x1161] |&nbsp;#x1163 |&nbsp;#x1165
+              |&nbsp;#x1167 |&nbsp;#x1169 |&nbsp;[#x116D-#x116E]
+              |&nbsp;[#x1172-#x1173] |&nbsp;#x1175 |&nbsp;#x119E
+              |&nbsp;#x11A8 |&nbsp;#x11AB |&nbsp;[#x11AE-#x11AF]
+              |&nbsp;[#x11B7-#x11B8] |&nbsp;#x11BA |&nbsp;[#x11BC-#x11C2]
+              |&nbsp;#x11EB |&nbsp;#x11F0 |&nbsp;#x11F9
+              |&nbsp;[#x1E00-#x1E9B] |&nbsp;[#x1EA0-#x1EF9]
+              |&nbsp;[#x1F00-#x1F15] |&nbsp;[#x1F18-#x1F1D]
+              |&nbsp;[#x1F20-#x1F45] |&nbsp;[#x1F48-#x1F4D]
+              |&nbsp;[#x1F50-#x1F57] |&nbsp;#x1F59 |&nbsp;#x1F5B
+              |&nbsp;#x1F5D |&nbsp;[#x1F5F-#x1F7D] |&nbsp;[#x1F80-#x1FB4]
+              |&nbsp;[#x1FB6-#x1FBC] |&nbsp;#x1FBE |&nbsp;[#x1FC2-#x1FC4]
+              |&nbsp;[#x1FC6-#x1FCC] |&nbsp;[#x1FD0-#x1FD3]
+              |&nbsp;[#x1FD6-#x1FDB] |&nbsp;[#x1FE0-#x1FEC]
+              |&nbsp;[#x1FF2-#x1FF4] |&nbsp;[#x1FF6-#x1FFC] |&nbsp;#x2126
+              |&nbsp;[#x212A-#x212B] |&nbsp;#x212E |&nbsp;[#x2180-#x2182]
+              |&nbsp;[#x3041-#x3094] |&nbsp;[#x30A1-#x30FA]
+              |&nbsp;[#x3105-#x312C] |&nbsp;[#xAC00-#xD7A3]</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Ideographic" name="NT-Ideographic"></a>[86]&nbsp;</td>
+
+              <td class="right"><code>Ideographic</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>[#x4E00-#x9FA5] |&nbsp;#x3007
+              |&nbsp;[#x3021-#x3029]</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-CombiningChar" name="NT-CombiningChar"></a>[87]&nbsp;</td>
+
+              <td class="right"><code>CombiningChar</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>[#x0300-#x0345] |&nbsp;[#x0360-#x0361]
+              |&nbsp;[#x0483-#x0486] |&nbsp;[#x0591-#x05A1]
+              |&nbsp;[#x05A3-#x05B9] |&nbsp;[#x05BB-#x05BD] |&nbsp;#x05BF
+              |&nbsp;[#x05C1-#x05C2] |&nbsp;#x05C4 |&nbsp;[#x064B-#x0652]
+              |&nbsp;#x0670 |&nbsp;[#x06D6-#x06DC] |&nbsp;[#x06DD-#x06DF]
+              |&nbsp;[#x06E0-#x06E4] |&nbsp;[#x06E7-#x06E8]
+              |&nbsp;[#x06EA-#x06ED] |&nbsp;[#x0901-#x0903] |&nbsp;#x093C
+              |&nbsp;[#x093E-#x094C] |&nbsp;#x094D |&nbsp;[#x0951-#x0954]
+              |&nbsp;[#x0962-#x0963] |&nbsp;[#x0981-#x0983] |&nbsp;#x09BC
+              |&nbsp;#x09BE |&nbsp;#x09BF |&nbsp;[#x09C0-#x09C4]
+              |&nbsp;[#x09C7-#x09C8] |&nbsp;[#x09CB-#x09CD] |&nbsp;#x09D7
+              |&nbsp;[#x09E2-#x09E3] |&nbsp;#x0A02 |&nbsp;#x0A3C
+              |&nbsp;#x0A3E |&nbsp;#x0A3F |&nbsp;[#x0A40-#x0A42]
+              |&nbsp;[#x0A47-#x0A48] |&nbsp;[#x0A4B-#x0A4D]
+              |&nbsp;[#x0A70-#x0A71] |&nbsp;[#x0A81-#x0A83] |&nbsp;#x0ABC
+              |&nbsp;[#x0ABE-#x0AC5] |&nbsp;[#x0AC7-#x0AC9]
+              |&nbsp;[#x0ACB-#x0ACD] |&nbsp;[#x0B01-#x0B03] |&nbsp;#x0B3C
+              |&nbsp;[#x0B3E-#x0B43] |&nbsp;[#x0B47-#x0B48]
+              |&nbsp;[#x0B4B-#x0B4D] |&nbsp;[#x0B56-#x0B57]
+              |&nbsp;[#x0B82-#x0B83] |&nbsp;[#x0BBE-#x0BC2]
+              |&nbsp;[#x0BC6-#x0BC8] |&nbsp;[#x0BCA-#x0BCD] |&nbsp;#x0BD7
+              |&nbsp;[#x0C01-#x0C03] |&nbsp;[#x0C3E-#x0C44]
+              |&nbsp;[#x0C46-#x0C48] |&nbsp;[#x0C4A-#x0C4D]
+              |&nbsp;[#x0C55-#x0C56] |&nbsp;[#x0C82-#x0C83]
+              |&nbsp;[#x0CBE-#x0CC4] |&nbsp;[#x0CC6-#x0CC8]
+              |&nbsp;[#x0CCA-#x0CCD] |&nbsp;[#x0CD5-#x0CD6]
+              |&nbsp;[#x0D02-#x0D03] |&nbsp;[#x0D3E-#x0D43]
+              |&nbsp;[#x0D46-#x0D48] |&nbsp;[#x0D4A-#x0D4D] |&nbsp;#x0D57
+              |&nbsp;#x0E31 |&nbsp;[#x0E34-#x0E3A] |&nbsp;[#x0E47-#x0E4E]
+              |&nbsp;#x0EB1 |&nbsp;[#x0EB4-#x0EB9] |&nbsp;[#x0EBB-#x0EBC]
+              |&nbsp;[#x0EC8-#x0ECD] |&nbsp;[#x0F18-#x0F19] |&nbsp;#x0F35
+              |&nbsp;#x0F37 |&nbsp;#x0F39 |&nbsp;#x0F3E |&nbsp;#x0F3F
+              |&nbsp;[#x0F71-#x0F84] |&nbsp;[#x0F86-#x0F8B]
+              |&nbsp;[#x0F90-#x0F95] |&nbsp;#x0F97 |&nbsp;[#x0F99-#x0FAD]
+              |&nbsp;[#x0FB1-#x0FB7] |&nbsp;#x0FB9 |&nbsp;[#x20D0-#x20DC]
+              |&nbsp;#x20E1 |&nbsp;[#x302A-#x302F] |&nbsp;#x3099
+              |&nbsp;#x309A</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Digit" name="NT-Digit">
+              </a>[88]&nbsp;</td>
+
+              <td class="right"><code>Digit</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>[#x0030-#x0039] |&nbsp;[#x0660-#x0669]
+              |&nbsp;[#x06F0-#x06F9] |&nbsp;[#x0966-#x096F]
+              |&nbsp;[#x09E6-#x09EF] |&nbsp;[#x0A66-#x0A6F]
+              |&nbsp;[#x0AE6-#x0AEF] |&nbsp;[#x0B66-#x0B6F]
+              |&nbsp;[#x0BE7-#x0BEF] |&nbsp;[#x0C66-#x0C6F]
+              |&nbsp;[#x0CE6-#x0CEF] |&nbsp;[#x0D66-#x0D6F]
+              |&nbsp;[#x0E50-#x0E59] |&nbsp;[#x0ED0-#x0ED9]
+              |&nbsp;[#x0F20-#x0F29]</code></td>
+            </tr>
+
+            <tr valign="top">
+              <td class="right"><a id="NT-Extender" name="NT-Extender">
+              </a>[89]&nbsp;</td>
+
+              <td class="right"><code>Extender</code></td>
+
+              <td class="center"><code>::=</code></td>
+
+              <td class="left"><code>#x00B7 |&nbsp;#x02D0 |&nbsp;#x02D1
+              |&nbsp;#x0387 |&nbsp;#x0640 |&nbsp;#x0E46 |&nbsp;#x0EC6
+              |&nbsp;#x3005 |&nbsp;[#x3031-#x3035] |&nbsp;[#x309D-#x309E]
+              |&nbsp;[#x30FC-#x30FE]</code></td>
+            </tr>
+          </tbody></table>
+        </td>
+      </tr>
+    </tbody></table>
+    <p><img alt=" the end " src="EBNF%20for%20XML_files/owl.gif" width="582" height="27"></p>
+  
+
+
+</body></html>
