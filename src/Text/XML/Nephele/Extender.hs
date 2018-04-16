@@ -15,9 +15,6 @@ import Papa
 import Text.Parser.Char(CharParsing(char), satisfyRange)
 import Text.Parsec(parse)
 
--- $setup
--- >>> import Data.Text
-
 newtype Extender =
   Extender Char
   deriving (Eq, Ord, Show)
@@ -25,9 +22,6 @@ newtype Extender =
 -- | Parse an extender.
 --
 -- @#x00B7 | #x02D0 | #x02D1 | #x0387 | #x0640 | #x0E46 | #x0EC6 | #x3005 | [#x3031-#x3035] | [#x309D-#x309E] | [#x30FC-#x30FE]@.
---
--- >>> parse extender "test" "\721bc"
--- Right (Extender '\721')
 extender ::
   CharParsing m =>
   m Extender
@@ -62,9 +56,6 @@ extenders1 =
   some1 extender
 
 -- | Extender prism from a char.
---
--- >>> '\721' ^? extender'
--- Just (Extender '\721')
 extender' ::
   Prism' Char Extender
 extender' =
@@ -73,9 +64,6 @@ extender' =
     ((^? _Right) . parse extender "extender'" . singleton)
 
 -- | Extender prism from text.
---
--- >>> pack "\721bc" ^? extenders'
--- Just (Extender '\721')
 extenders' ::
   Prism' Text Extender
 extenders' =

@@ -15,9 +15,6 @@ import Data.Text(Text, singleton)
 import Text.Parser.Char(CharParsing(char), satisfyRange)
 import Text.Parsec(parse)
 
--- $setup
--- >>> import Data.Text
-
 newtype Ideographic =
   Ideographic Char
   deriving (Eq, Ord, Show)
@@ -25,9 +22,6 @@ newtype Ideographic =
 -- | Parse an ideographic.
 --
 -- @[#x4E00-#x9FA5] | #x3007 | [#x3021-#x3029]@.
---
--- >>> parse ideographic "test" "\20016bc"
--- Right (Ideographic '\20016')
 ideographic ::
   CharParsing m =>
   m Ideographic
@@ -55,9 +49,6 @@ ideographics1 =
   some1 ideographic
 
 -- | Ideographic prism from a char.
---
--- >>> '\20016' ^? ideographic'
--- Just (Ideographic '\20016')
 ideographic' ::
   Prism' Char Ideographic
 ideographic' =
@@ -66,9 +57,6 @@ ideographic' =
     ((^? _Right) . parse ideographic "ideographic'" . singleton)
 
 -- | Ideographic prism from text.
---
--- >>> pack "\20016bc" ^? ideographics'
--- Just (Ideographic '\20016')
 ideographics' ::
   Prism' Text Ideographic
 ideographics' =

@@ -15,9 +15,6 @@ import Papa
 import Text.Parser.Char(CharParsing, satisfyRange)
 import Text.Parsec(parse)
 
--- $setup
--- >>> import Data.Text
-
 newtype Digit =
   Digit Char
   deriving (Eq, Ord, Show)
@@ -25,9 +22,6 @@ newtype Digit =
 -- | Parse a digit.
 --
 -- @[#x0030-#x0039] | [#x0660-#x0669] | [#x06F0-#x06F9] | [#x0966-#x096F] | [#x09E6-#x09EF] | [#x0A66-#x0A6F] | [#x0AE6-#x0AEF] | [#x0B66-#x0B6F] | [#x0BE7-#x0BEF] | [#x0C66-#x0C6F] | [#x0CE6-#x0CEF] | [#x0D66-#x0D6F] | [#x0E50-#x0E59] | [#x0ED0-#x0ED9] | [#x0F20-#x0F29]@.
---
--- >>> parse digit "test" "5bc"
--- Right (Digit '5')
 digit ::
   CharParsing m =>
   m Digit
@@ -66,9 +60,6 @@ digits1 =
   some1 digit
 
 -- | Digit prism from a char.
---
--- >>> '5' ^? digit'
--- Just (Digit '5')
 digit' ::
   Prism' Char Digit
 digit' =
@@ -77,9 +68,6 @@ digit' =
     ((^? _Right) . parse digit "digit'" . singleton)
 
 -- | Digit prism from text.
---
--- >>> pack "5bc" ^? digits'
--- Just (Digit '5')
 digits' ::
   Prism' Text Digit
 digits' =
