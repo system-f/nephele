@@ -1,6 +1,6 @@
-{ mkDerivation, base, checkers, lens, papa, parsec, parsers
-, QuickCheck, semigroups, stdenv, tasty, tasty-hunit
-, tasty-quickcheck, text, transformers
+{ mkDerivation, base, checkers, hedgehog, lens, papa, parsec
+, parsers, QuickCheck, semigroups, stdenv, tasty, tasty-hedgehog
+, tasty-hunit, tasty-quickcheck, text, transformers
 }:
 mkDerivation {
   pname = "nephele";
@@ -10,7 +10,8 @@ mkDerivation {
     base lens papa parsec parsers semigroups text transformers
   ];
   testHaskellDepends = [
-    base checkers lens QuickCheck tasty tasty-hunit tasty-quickcheck
+    base checkers hedgehog lens papa parsec parsers QuickCheck tasty
+    tasty-hedgehog tasty-hunit tasty-quickcheck text
   ];
   homepage = "https://github.com/qfpl/nephele";
   description = "General purpose XML parser and library";
