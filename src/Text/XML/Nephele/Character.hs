@@ -20,9 +20,6 @@ import Papa
 import Text.Parser.Char(CharParsing, oneOf, satisfyRange)
 import Text.Parsec(parse)
 
--- $setup
--- >>> import Data.Text
-
 newtype Character =
   Character Char
   deriving (Eq, Ord, Show)
@@ -30,9 +27,6 @@ newtype Character =
 -- | Parse a character.
 --
 -- @#x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]@.
---
--- >>> parse character "test" "abc"
--- Right (Character 'a')
 character ::
   CharParsing m =>
   m Character
@@ -94,9 +88,6 @@ characters1 =
   some1 character
 
 -- | Character prism from a char.
---
--- >>> 'a' ^? character'
--- Just (Character 'a')
 character' ::
   Prism' Char Character
 character' =
@@ -105,9 +96,6 @@ character' =
     ((^? _Right) . parse character "character'" . singleton)
 
 -- | Character prism from text.
---
--- >>> pack "abc" ^? characters'
--- Just (Character 'a')
 characters' ::
   Prism' Text Character
 characters' =
