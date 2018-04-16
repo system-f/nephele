@@ -1,13 +1,13 @@
-{ mkDerivation, base, checkers, lens, parsec, parsers, QuickCheck
-, semigroups, stdenv, tasty, tasty-hunit, tasty-quickcheck, text
-, transformers
+{ mkDerivation, base, checkers, lens, papa, parsec, parsers
+, QuickCheck, semigroups, stdenv, tasty, tasty-hunit
+, tasty-quickcheck, text, transformers
 }:
 mkDerivation {
   pname = "nephele";
   version = "0.0.1";
   src = ./.;
   libraryHaskellDepends = [
-    base lens parsec parsers semigroups text transformers
+    base lens papa parsec parsers semigroups text transformers
   ];
   testHaskellDepends = [
     base checkers lens QuickCheck tasty tasty-hunit tasty-quickcheck

@@ -15,15 +15,10 @@ module Text.XML.Nephele.Character(
 , noneofCharacter
 ) where
 
-import Text.Parser.Char(CharParsing(..), oneOf, satisfyRange)
-import Text.Parsec(parse)
-import Text.Parsec.Text()
 import Data.Text(Text, singleton)
-import Control.Applicative(Alternative(..), (<$>))
-import Data.Foldable(Foldable, elem, notElem)
-import Data.List.NonEmpty(NonEmpty(..), some1)
-import Control.Lens(Prism', prism', (^?), _Right)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool(..), String, error)
+import Papa
+import Text.Parser.Char(CharParsing, oneOf, satisfyRange)
+import Text.Parsec(parse)
 
 -- $setup
 -- >>> import Data.Text

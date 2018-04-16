@@ -8,10 +8,8 @@ module Text.XML.Nephele.ParameterEntityReference(
 , parameterEntityReferences1
 ) where
 
-import Text.Parser.Char(CharParsing(..))
-import Control.Applicative(Applicative(..), Alternative(..), (<$>))
-import Data.List.NonEmpty(NonEmpty(..), some1)
-import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
+import Papa
+import Text.Parser.Char(CharParsing(char))
 import Text.XML.Nephele.Name(Name, name)
 
 -- $setup

@@ -9,11 +9,8 @@ module Text.XML.Nephele.Letter(
 , letter'
 ) where
 
-import Text.Parser.Char(CharParsing(..))
-import Control.Applicative(Alternative(..), (<$>))
-import Data.List.NonEmpty(NonEmpty(..), some1)
-import Control.Lens(Iso', iso)
-import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
+import Papa
+import Text.Parser.Char(CharParsing)
 import Text.XML.Nephele.BaseCharacter(BaseCharacter, baseCharacter)
 import Text.XML.Nephele.Ideographic(Ideographic, ideographic)
 

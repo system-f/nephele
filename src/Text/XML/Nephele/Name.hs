@@ -8,9 +8,8 @@ module Text.XML.Nephele.Name(
 , name
 ) where
 
-import Text.Parser.Char(CharParsing(..))
-import Control.Applicative(Applicative(..), Alternative(..), (<$>), (<*>), (<$))
-import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
+import Papa
+import Text.Parser.Char(CharParsing(char))
 import Text.XML.Nephele.NameCharacter(NameCharacter, nameCharacters)
 import Text.XML.Nephele.Letter(Letter, letter)
 

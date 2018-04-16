@@ -10,14 +10,10 @@ module Text.XML.Nephele.Whitespace(
 , whitespaces'
 ) where
 
-import Text.Parser.Char(CharParsing(..), char)
-import Text.Parsec(parse)
-import Text.Parsec.Text()
 import Data.Text(Text, singleton)
-import Control.Applicative(Alternative(..), (<$>), (<$))
-import Data.List.NonEmpty(NonEmpty(..), some1)
-import Control.Lens(Prism', prism', (^?), _Right)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
+import Papa hiding (Space)
+import Text.Parser.Char(CharParsing(char), char)
+import Text.Parsec(parse)
 
 -- $setup
 -- >>> import Data.Text

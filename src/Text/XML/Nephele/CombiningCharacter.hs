@@ -10,15 +10,10 @@ module Text.XML.Nephele.CombiningCharacter(
 , combiningCharacters'
 ) where
 
-import Text.Parser.Char(CharParsing(..), satisfyRange)
-import Text.Parsec(parse)
-import Text.Parsec.Text()
+import Papa
 import Data.Text(Text, singleton)
-import Control.Applicative(Alternative(..), (<$>))
-import Data.Foldable(asum)
-import Data.List.NonEmpty(NonEmpty(..), some1)
-import Control.Lens(Prism', prism', (^?), _Right)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
+import Text.Parser.Char(CharParsing(char), satisfyRange)
+import Text.Parsec(parse)
 
 -- $setup
 -- >>> import Data.Text

@@ -3,11 +3,8 @@ module Text.XML.Nephele.Nmtoken(
 , nmtoken
 ) where
 
-import Text.Parser.Char(CharParsing(..))
-import Text.Parsec.Text()
-import Control.Applicative((<$>))
-import Data.List.NonEmpty(NonEmpty(..))
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, flip, id, error, undefined)
+import Papa
+import Text.Parser.Char(CharParsing)
 import Text.XML.Nephele.NameCharacter(NameCharacter, nameCharacters1)
 
 -- $setup

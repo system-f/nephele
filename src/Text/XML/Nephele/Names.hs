@@ -6,10 +6,8 @@ module Text.XML.Nephele.Names(
 , names
 ) where
 
-import Text.Parser.Char(CharParsing(..))
-import Text.Parsec.Text()
-import Control.Applicative(Applicative(..), Alternative(..), (<$>))
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, flip, id, error, undefined)
+import Papa
+import Text.Parser.Char(CharParsing)
 import Text.XML.Nephele.Whitespace(Whitespaces1, whitespaces1)
 import Text.XML.Nephele.Nmtoken(Nmtoken, nmtoken)
 

@@ -8,10 +8,8 @@ module Text.XML.Nephele.NameCharacter(
 , nameCharacters1
 ) where
 
-import Text.Parser.Char(CharParsing(..))
-import Control.Applicative(Alternative(..), (<$>), (<$))
-import Data.List.NonEmpty(NonEmpty(..), some1)
-import Prelude(Char, Eq(..), Show(..), Ord(..), Either(..), either, (&&), (||), (.), ($), Bool, String, error)
+import Papa
+import Text.Parser.Char(CharParsing(char))
 import Text.XML.Nephele.Letter(Letter, letter)
 import Text.XML.Nephele.Digit(Digit, digit)
 import Text.XML.Nephele.CombiningCharacter(CombiningCharacter, combiningCharacter)

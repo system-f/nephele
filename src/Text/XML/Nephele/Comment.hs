@@ -8,14 +8,12 @@ module Text.XML.Nephele.Comment(
 , comment'
 ) where
 
-import Text.Parser.Char(CharParsing(..), char, oneOf, satisfyRange)
+import Data.Text(Text, pack)
+import qualified Data.Text as Text(concat)
+import Papa
+import Text.Parser.Char(CharParsing(char, text), oneOf, satisfyRange)
 import Text.Parser.Combinators(try, between)
 import Text.Parsec(parse)
-import Text.Parsec.Text()
-import Data.Text(Text, pack, concat)
-import Control.Applicative(Applicative(..), Alternative(..), (<$>))
-import Control.Lens(Reversing(..), Prism', prism', (^?), _Right)
-import Prelude(Char, Eq(..), Show(..), Ord(..), (&&), (||), (.), ($), Bool, String, error)
 
 -- $setup
 -- >>> import Text.Parsec
@@ -76,7 +74,7 @@ commentCharacters =
                 <|> satisfyRange '\x10000' '\x10FFFF'
       s = (\m c -> [m, c]) <$> char '-' <*> nominus
       t = (:[]) <$> nominus
-      ch = concat <$> many (pack <$> (try s <|> t))
+      ch = Text.concat <$> many (pack <$> (try s <|> t))
   in Comment <$> ch
 
 -- | The parser for a comment.
