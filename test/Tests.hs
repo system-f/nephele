@@ -17,6 +17,8 @@ main =
     testGroup "nephele"
       [
         testBaseCharacter
+      , testCharacter
+      , testCombiningCharacter
       ]
 
 testBaseCharacter ::
