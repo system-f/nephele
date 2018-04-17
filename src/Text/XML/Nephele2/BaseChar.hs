@@ -11,7 +11,7 @@ module Text.XML.Nephele2.BaseChar(
 ) where
 
 import Data.Text(Text, singleton)
-import Data.Text1
+import Data.Text1(Text1, _Single)
 import Papa
 import Text.Parsec(parse)
 import Text.Parser.Char(CharParsing(char), satisfyRange)
