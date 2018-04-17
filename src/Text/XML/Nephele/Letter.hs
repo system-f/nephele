@@ -11,7 +11,7 @@ module Text.XML.Nephele.Letter(
 
 import Papa
 import Text.Parser.Char(CharParsing)
-import Text.XML.Nephele.BaseCharacter(BaseCharacter, baseCharacter)
+import Text.XML.Nephele.BaseChar(BaseChar, parseBaseChar)
 import Text.XML.Nephele.Ideographic(Ideographic, ideographic)
 
 -- $setup
@@ -20,7 +20,7 @@ import Text.XML.Nephele.Ideographic(Ideographic, ideographic)
 -- >>> import Control.Lens
 
 data Letter =
-  BaseCharacterLetter BaseCharacter
+  BaseCharacterLetter BaseChar
   | IdeographicLetter Ideographic
   deriving (Eq, Ord, Show)
 
@@ -37,7 +37,7 @@ letter ::
   CharParsing m =>
   m Letter
 letter =
-  (BaseCharacterLetter <$> baseCharacter) <|> (IdeographicLetter <$> ideographic)
+  (BaseCharacterLetter <$> parseBaseChar) <|> (IdeographicLetter <$> ideographic)
 
 -- | Parse zero or many letters.
 letters ::
@@ -55,7 +55,7 @@ letters1 =
 
 -- | Letter isomorphism from either a @BaseCharacter@ or @Ideographic@.
 letter' ::
-  Iso' Letter (Either BaseCharacter Ideographic)
+  Iso' Letter (Either BaseChar Ideographic)
 letter' =
   iso (\l -> case l of
                BaseCharacterLetter c -> Left c

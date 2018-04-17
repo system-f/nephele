@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Text.XML.Nephele2.BaseChar(
+module Text.XML.Nephele.BaseChar(
   BaseChar
 , parseBaseChar
 , parseBaseChars
