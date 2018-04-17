@@ -11,11 +11,11 @@ module Text.XML.Nephele2.BaseChar(
 ) where
 
 import Data.Text(Text, singleton)
-import Data.Text1(Text1, _Single)
+import qualified Data.Text as Text(null)
+import Data.Text1(Text1(Text1), _Single)
 import Papa
 import Text.Parsec(parse)
 import Text.Parser.Char(CharParsing(char), satisfyRange)
-import Text.Parsec.Prim(Stream)
 
 newtype BaseChar =
   BaseChar Char
@@ -264,33 +264,41 @@ instance AsBaseChar Char where
   _BaseChar =
     prism'
       (\(BaseChar c) -> c)
-      (streamBaseChar . singleton)
+      ((^? _Right) . parse parseBaseChar "parseBaseChar" . singleton)
 
 -- | BaseChar prism from a text.
 instance AsBaseChar Text where
   _BaseChar =
     prism'
       (\(BaseChar c) -> singleton c)
-      streamBaseChar
+      (\x -> 
+        uncons x >>= \(h, t) ->
+          if Text.null t
+            then
+              h ^? _BaseChar
+            else
+              Nothing)
+
 
 -- | BaseChar prism from a string.
 instance AsBaseChar [Char] where
   _BaseChar =
     prism'
       (\(BaseChar c) -> [c])
-      streamBaseChar
+      (\x -> case x of
+                [c] ->
+                  c ^? _BaseChar
+                _ ->
+                  Nothing)
 
 -- | BaseChar prism from a text1.
 instance AsBaseChar Text1 where
   _BaseChar =
     prism'
       (\(BaseChar c) -> _Single # c)
-      (\x -> x ^? _Single >>= \c -> c ^? _BaseChar)
-
--- not exported
-streamBaseChar ::
-  Stream a Identity Char =>
-  a
-  -> Maybe BaseChar
-streamBaseChar =
-  (^? _Right) . parse parseBaseChar "parseBaseChar"
+      (\(Text1 h t) -> 
+        if Text.null t
+          then
+            h ^? _BaseChar
+          else
+            Nothing)
